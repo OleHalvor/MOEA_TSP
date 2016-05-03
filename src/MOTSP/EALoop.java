@@ -8,10 +8,11 @@ public class EALoop {
     private static int curGen = 0;
 
 
-    public static void Main (String[] args){
-
+    public static void main (String[] args){
+        System.out.println("hello");
         while (curGen < nGenerations ){
             //TODO: DO LOOP STUFF
+            curGen ++;
         }
 
     }
