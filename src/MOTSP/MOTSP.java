@@ -7,11 +7,11 @@ public class MOTSP {
     private int[] genome;
 
     public MOTSP(){
-        this.genome = generate_random_genome();
+        generate_random_genome();
     }
 
-    private int[] generate_random_genome(){
-        //TODO: MAKE DIS
+    private void generate_random_genome(){
+        //TODO make
     }
 
     public int calc_fitness(){
