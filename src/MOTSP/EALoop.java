@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Created by Ole on 03.05.2016.
  */
 public class EALoop {
-    private static int nGenerations = 100, curGen = 0, popSize = 4;
+    private static int nGenerations = 100, curGen = 0, popSize = 20;
     public static final double mutationRate = 1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
@@ -18,6 +18,12 @@ public class EALoop {
         initPopulation();
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
         printFronts(paretoFronts);
+    }
+
+    private static void initPopulation(){
+        for (int n=0; n<popSize; n++){
+            population.add(new MOTSP());
+        }
     }
 
     private static MOTSP crossOver(MOTSP p1, MOTSP p2){
@@ -55,11 +61,7 @@ public class EALoop {
         return new MOTSP(genome);
     }
 
-    private static void initPopulation(){
-        for (int n=0; n<popSize; n++){
-            population.add(new MOTSP());
-        }
-    }
+
 
     private static void makeChildren(){
         parentSelection();
