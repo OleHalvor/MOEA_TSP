@@ -51,15 +51,17 @@ public class MOTSP {
         return this.genome;
     }
 
-    public void calc_fitness(){
+    private void calc_fitness(){
         Random rand = new Random();
         dist_fitness = rand.nextDouble();
-
     }
+
+
 
     public void tryToMutate(){
         Random rand = new Random();
         if (rand.nextDouble() < EALoop.mutationRate) {
+            System.out.println("mutated!");
             int gen1 = rand.nextInt(48);
             int gen2 = rand.nextInt(48 - gen1) + gen1;
             int tempGen = this.genome[gen1];

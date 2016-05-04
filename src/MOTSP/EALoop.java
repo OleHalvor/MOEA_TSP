@@ -21,26 +21,24 @@ import java.util.Arrays;
  */
 public class EALoop {
     private static int nGenerations = 100, curGen = 0, popSize = 100;
-    public static final double mutationRate = 0.1;
+    public static final double mutationRate = 1;
     private static ArrayList<MOTSP> population;
+    public static Fitness fitness = new Fitness();
 
     public static void main (String[] args){
         System.out.println("running");
         MOTSP p1 = new MOTSP();
         MOTSP p2 = new MOTSP();
         MOTSP child = crossOver(p1,p2);
-        System.out.println(Arrays.toString(p1.getGenome()));
-        System.out.println(Arrays.toString(p2.getGenome()));
-        System.out.println(Arrays.toString(child.getGenome()));
 
+        int[] childDistAndCost = fitness.getDistanceAndCost(child);
+        System.out.println("Child dist: " + childDistAndCost[0]);
+        System.out.println("Child cost: " + childDistAndCost[1]);
         child.tryToMutate();
-        System.out.println(Arrays.toString(child.getGenome()));
-        child.tryToMutate();
-        System.out.println(Arrays.toString(child.getGenome()));
-        child.tryToMutate();
-        System.out.println(Arrays.toString(child.getGenome()));
-        child.tryToMutate();
-        System.out.println(Arrays.toString(child.getGenome()));
+        childDistAndCost = fitness.getDistanceAndCost(child);
+        System.out.println("Child dist: " + childDistAndCost[0]);
+        System.out.println("Child cost: " + childDistAndCost[1]);
+
 
     }
 
@@ -106,33 +104,5 @@ public class EALoop {
 
     }
 
-    private static ArrayList readFiles(String filename) throws Exception{
-        ArrayList<ArrayList<Integer>> outer = new ArrayList<ArrayList<Integer>>();
-        int i = 0;
-        int k;
-        File myFile = new File(filename);
-        FileInputStream fis = new FileInputStream(myFile);
-        // Finds the workbook instance for XLSX file
-        XSSFWorkbook myWorkBook = new XSSFWorkbook (fis); // Return first sheet from the XLSX workbook
-        XSSFSheet mySheet = myWorkBook.getSheetAt(0); // Get iterator to all the rows in current sheet
-        Iterator<Row> rowIterator = mySheet.iterator(); // Traversing over each row of XLSX file
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            Iterator<Cell> cellIterator = row.cellIterator();
-            ArrayList<Integer> inner = new ArrayList<Integer>();
-            k = 0;
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                if (k != 0) {
-                    inner.add(((int) cell.getNumericCellValue()));
-                }
-                k++;
-            }
-            if ( i != 0) {
-                outer.add(inner);
-            }
-            i++;
-        }
-        return outer;
-    }
+
 }
