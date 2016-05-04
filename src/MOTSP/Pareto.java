@@ -19,7 +19,7 @@ public class Pareto {
         return false;
     }
 
-    public static ArrayList<ArrayList<MOTSP>> getParetoFronts (ArrayList<MOTSP> population){
+    public static ArrayList<ArrayList<MOTSP>> generateParetoFronts (ArrayList<MOTSP> population){
         ArrayList<ArrayList<MOTSP>> fronts = new ArrayList<ArrayList<MOTSP>>();
         ArrayList<ArrayList<MOTSP>> tempFronts = extractNonDominated(population);
         while (true){

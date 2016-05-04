@@ -16,7 +16,7 @@ public class EALoop {
     public static void main (String[] args){
         System.out.println("Starting EALoop");
         initPopulation();
-        ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
+        ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
         printFronts(paretoFronts);
     }
 
