@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Created by Ole on 03.05.2016.
@@ -34,9 +35,25 @@ public class EALoop {
 
     }
 
+    private static MOTSP crossOver(MOTSP p1, MOTSP p2){
+        int[] p1_gen = p1.getGenome();
+        Random rand = new Random();
+        int[] genome = new int[48];
+        int cut1 = rand.nextInt(48);
+        int cut2 = rand.nextInt(48-cut1);
+        for (int i = cut1; i<cut2; i++){
+            genome[i] = p1_gen[i];
+        }
+        for (int i = 0; i <)
+
+
+
+        return child;
+    }
+
     private static void initPopulation(){
         for (int n=0; n<popSize; n++){
-            population.add(MOTSP.MOTSP());
+            population.add(new MOTSP());
         }
     }
 
