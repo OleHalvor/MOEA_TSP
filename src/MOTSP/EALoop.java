@@ -21,6 +21,7 @@ import java.util.Arrays;
  */
 public class EALoop {
     private static int nGenerations = 100, curGen = 0, popSize = 100;
+    public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population;
 
     public static void main (String[] args){
@@ -30,6 +31,15 @@ public class EALoop {
         MOTSP child = crossOver(p1,p2);
         System.out.println(Arrays.toString(p1.getGenome()));
         System.out.println(Arrays.toString(p2.getGenome()));
+        System.out.println(Arrays.toString(child.getGenome()));
+
+        child.tryToMutate();
+        System.out.println(Arrays.toString(child.getGenome()));
+        child.tryToMutate();
+        System.out.println(Arrays.toString(child.getGenome()));
+        child.tryToMutate();
+        System.out.println(Arrays.toString(child.getGenome()));
+        child.tryToMutate();
         System.out.println(Arrays.toString(child.getGenome()));
 
     }
@@ -50,9 +60,8 @@ public class EALoop {
         Random rand = new Random();
         int cut1 = rand.nextInt(48);
         int cut2 = rand.nextInt(48-cut1)+cut1;
-        System.out.println("Cut 1 "+ cut1 + " Cut 2 "+ cut2);
-        int[] p1_cut = new int[cut2-cut1];
 
+        int[] p1_cut = new int[cut2-cut1];
 
         for (int i = cut1; i<cut2; i++){
             genome[i] = p1_gen[i];
@@ -63,7 +72,7 @@ public class EALoop {
                 for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p2_val = p2_gen[k];
                     boolean found = false;
-                    for (int o=0; o<48; o++){
+                    for (int o=0; o<48; o++){   //This could be sped up with a .contains method..
                         if (genome[o]==p2_val){
                             found = true;
                             break;
@@ -74,7 +83,6 @@ public class EALoop {
                         break;
                     }
                 }
-
             }
         }
         return new MOTSP(genome);
