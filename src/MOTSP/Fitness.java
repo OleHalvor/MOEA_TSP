@@ -57,7 +57,7 @@ public class Fitness {
     }
 
     private static ArrayList readFiles(String filename) throws Exception{
-        System.out.println("reding files");
+        System.out.println("reading "+filename);
         ArrayList<ArrayList<Integer>> outer = new ArrayList<ArrayList<Integer>>();
         int i = 0;
         int k;

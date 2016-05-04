@@ -15,15 +15,17 @@ public class MOTSP {
     private double cost_fitness = 0;
     private double tot_fitness  = 0;
 
-    public MOTSP(){
+    public MOTSP(){     //Constructor for new random individual
         generate_random_genome();
+        setDistAndCost(Fitness.getDistanceAndCost(this));
     }
 
-    public MOTSP(int[] genome){
+    public MOTSP(int[] genome){ //Constructor for new individual with given genome
         this.genome = genome;
+        setDistAndCost(Fitness.getDistanceAndCost(this));
     }
 
-    private void generate_random_genome(){
+    private void generate_random_genome(){  //Generate all integers up to 48 and shuffle them.
         int[] new_gene = new int[48];
         for (int i =0; i<48; i++){
             new_gene[i] = i;
@@ -32,7 +34,7 @@ public class MOTSP {
         this.genome = new_gene;
     }
 
-    private static int[] shuffleArray(int[] ar) {
+    private static int[] shuffleArray(int[] ar) {   //Used when generating new random genomes
         Random rnd = ThreadLocalRandom.current();
         for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
@@ -43,9 +45,6 @@ public class MOTSP {
         return ar;
     }
 
-    public void setGenome(int[] genome){
-        this.genome = genome;
-    }
 
     public int[] getGenome(){
         return this.genome;
@@ -54,6 +53,14 @@ public class MOTSP {
     private void calc_fitness(){
         Random rand = new Random();
         dist_fitness = rand.nextDouble();
+    }
+
+    public void setDistAndCost(int[] distAndCost){
+        if ((distAndCost[0] >= 0)&&(distAndCost[1] >= 0)) {
+            this.dist_fitness = distAndCost[0];
+            this.cost_fitness = distAndCost[1];
+        }
+        else System.out.printf("Wrong distance of cost fitnesses given!");
     }
 
 
@@ -68,5 +75,12 @@ public class MOTSP {
             this.genome[gen1] = this.genome[gen2];
             this.genome[gen2] = tempGen;
         }
+    }
+
+    public double getDistance(){
+        return this.dist_fitness;
+    }
+    public double getCost(){
+        return this.cost_fitness;
     }
 }

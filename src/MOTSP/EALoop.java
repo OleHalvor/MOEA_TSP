@@ -22,49 +22,38 @@ import java.util.Arrays;
 public class EALoop {
     private static int nGenerations = 100, curGen = 0, popSize = 100;
     public static final double mutationRate = 1;
-    private static ArrayList<MOTSP> population;
+    private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     public static Fitness fitness = new Fitness();
 
     public static void main (String[] args){
-        System.out.println("running");
-        MOTSP p1 = new MOTSP();
-        MOTSP p2 = new MOTSP();
-        MOTSP child = crossOver(p1,p2);
+        System.out.println("EALoop running");
+        for (int i=0; i<6; i++){
+            population.add(new MOTSP());
+        }
+        for (int i=0; i<population.size(); i++){
+            System.out.println(i + " Distance, Cost: "+ population.get(i).getDistance()+", "+population.get(i).getCost());
+        }
 
-        int[] childDistAndCost = fitness.getDistanceAndCost(child);
-        System.out.println("Child dist: " + childDistAndCost[0]);
-        System.out.println("Child cost: " + childDistAndCost[1]);
-        child.tryToMutate();
-        childDistAndCost = fitness.getDistanceAndCost(child);
-        System.out.println("Child dist: " + childDistAndCost[0]);
-        System.out.println("Child cost: " + childDistAndCost[1]);
+        for (int i=0; i<population.size(); i++){
+            System.out.println("0 dominates "+i+" "+ Pareto.dominates(population.get(0),population.get(i)));
+        }
 
 
-    }
 
-    public static boolean contains(final int[] arrayS, final int keyS) {
-        String array = Arrays.toString(arrayS);
-        String key = (Integer.toString(keyS));
-        return array.contains(key);
     }
 
     private static MOTSP crossOver(MOTSP p1, MOTSP p2){
         int[] p1_gen = p1.getGenome();
         int[] p2_gen = p2.getGenome();
-
         int[] genome = new int[48];
         Arrays.fill(genome, -1);
-
         Random rand = new Random();
         int cut1 = rand.nextInt(48);
         int cut2 = rand.nextInt(48-cut1)+cut1;
-
         int[] p1_cut = new int[cut2-cut1];
-
         for (int i = cut1; i<cut2; i++){
             genome[i] = p1_gen[i];
         }
-
         for (int i = 0; i <48; i++){ //Loop through new genome
             if (genome[i]==-1){      //Indicates chromosome not set
                 for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
