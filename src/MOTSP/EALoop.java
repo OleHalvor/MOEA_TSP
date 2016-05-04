@@ -1,18 +1,6 @@
 package MOTSP;
 
 import java.util.*;
-
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -23,20 +11,13 @@ public class EALoop {
     private static int nGenerations = 100, curGen = 0, popSize = 20;
     public static final double mutationRate = 1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
-    public static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
+    private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
 
     public static void main (String[] args){
         System.out.println("EALoop running");
         initPopulation();
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
-
-        for (int i =0; i<paretoFronts.size(); i++){
-            for ( int k=0; k<paretoFronts.get(i).size(); k++){
-                System.out.println("Front "+i+" Solution #"+k+"(distance,cost): "+paretoFronts.get(i).get(k).getDistance()+", "+paretoFronts.get(i).get(k).getCost() );
-            }
-        }
-
-
+        printFronts(paretoFronts);
 
     }
 
@@ -49,11 +30,11 @@ public class EALoop {
         int[] p1_gen = p1.getGenome();
         int[] p2_gen = p2.getGenome();
         int[] genome = new int[48];
-        Arrays.fill(genome, -1);    //Fills the genome with chromosomes of "-1"
+        Arrays.fill(genome, -1);         //Fills the genome with chromosomes of "-1"
         Random rand = new Random();
-        int cut1 = rand.nextInt(48);        //Start of dna sequence from parent 1
-        int cut2 = rand.nextInt(48-cut1)+cut1;  //End of dna sequence from parent 1
-        for (int i = cut1; i<cut2; i++){    //Sets the sequence from parent 1 to child
+        int cut1 = rand.nextInt(48);             //Start of dna sequence from parent 1
+        int cut2 = rand.nextInt(48-cut1)+cut1;   //End of dna sequence from parent 1
+        for (int i = cut1; i<cut2; i++){         //Sets the sequence from parent 1 to child
             genome[i] = p1_gen[i];
         }
         for (int i = 0; i <48; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
@@ -95,5 +76,12 @@ public class EALoop {
 
     }
 
+    private static void printFronts(ArrayList<ArrayList<MOTSP>> paretoFronts){
+        for (int i =0; i<paretoFronts.size(); i++){
+            for ( int k=0; k<paretoFronts.get(i).size(); k++){
+                System.out.println("Front "+i+" Solution #"+k+"(distance,cost): "+paretoFronts.get(i).get(k).getDistance()+", "+paretoFronts.get(i).get(k).getCost() );
+            }
+        }
+    }
 
 }

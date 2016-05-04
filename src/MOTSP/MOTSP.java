@@ -22,6 +22,7 @@ public class MOTSP {
 
     public MOTSP(int[] genome){ //Constructor for new individual with given genome
         this.genome = genome;
+        tryToMutate();
         setDistAndCost(Fitness.getDistanceAndCost(this));
     }
 

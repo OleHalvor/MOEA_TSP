@@ -52,8 +52,11 @@ public class Pareto {
             if (!isDominated){
                 pFront.add(s1);
             }
-            else pBack.add(s1);
+            else {
+                pBack.add(s1);
+            }
         }
+
         result.add(pFront);
         result.add(pBack);
         return result;
