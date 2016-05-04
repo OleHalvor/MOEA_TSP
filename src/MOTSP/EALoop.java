@@ -27,7 +27,7 @@ public class EALoop {
 
     public static void main (String[] args){
         System.out.println("EALoop running");
-        for (int i=0; i<6; i++){
+        for (int i=0; i<20; i++){
             population.add(new MOTSP());
         }
         for (int i=0; i<population.size(); i++){
@@ -37,14 +37,12 @@ public class EALoop {
         for (int i=0; i<population.size(); i++){
             System.out.println("0 dominates "+i+" "+ Pareto.dominates(population.get(0),population.get(i)));
         }
-        ArrayList<MOTSP> nonDom = Pareto.getParetoSets(population).get(0);
-        ArrayList<MOTSP> dom = Pareto.getParetoSets(population).get(1);
+        ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
 
-        for (int i=0; i<nonDom.size(); i++){
-            System.out.println("NonDominated #"+i+" "+ nonDom.get(i).getDistance()+", "+nonDom.get(i).getCost());
-        }
-        for (int i=0; i<dom.size(); i++){
-            System.out.println("Dominated #"+i+" "+ dom.get(i).getDistance()+", "+dom.get(i).getCost());
+        for (int i =0; i<paretoFronts.size(); i++){
+            for ( int k=0; k<paretoFronts.get(i).size(); k++){
+                System.out.println("Front "+i+" Solution #"+k+": "+paretoFronts.get(i).get(k).getDistance()+", "+paretoFronts.get(i).get(k).getCost() );
+            }
         }
 
 
@@ -55,15 +53,14 @@ public class EALoop {
         int[] p1_gen = p1.getGenome();
         int[] p2_gen = p2.getGenome();
         int[] genome = new int[48];
-        Arrays.fill(genome, -1);
+        Arrays.fill(genome, -1);    //Fills the genome with chromosomes of "-1"
         Random rand = new Random();
-        int cut1 = rand.nextInt(48);
-        int cut2 = rand.nextInt(48-cut1)+cut1;
-        int[] p1_cut = new int[cut2-cut1];
-        for (int i = cut1; i<cut2; i++){
+        int cut1 = rand.nextInt(48);        //Start of dna sequence from parent 1
+        int cut2 = rand.nextInt(48-cut1)+cut1;  //End of dna sequence from parent 1
+        for (int i = cut1; i<cut2; i++){    //Sets the sequence from parent 1 to child
             genome[i] = p1_gen[i];
         }
-        for (int i = 0; i <48; i++){ //Loop through new genome
+        for (int i = 0; i <48; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
             if (genome[i]==-1){      //Indicates chromosome not set
                 for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p2_val = p2_gen[k];

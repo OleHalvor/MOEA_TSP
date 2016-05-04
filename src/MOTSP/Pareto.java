@@ -20,7 +20,23 @@ public class Pareto {
     }
 
 
-    public static ArrayList<ArrayList<MOTSP>> getParetoSets(ArrayList<MOTSP> population){
+    public static ArrayList<ArrayList<MOTSP>> getParetoFronts (ArrayList<MOTSP> population){
+        ArrayList<ArrayList<MOTSP>> fronts = new ArrayList<ArrayList<MOTSP>>();
+        boolean done = false;
+        ArrayList<ArrayList<MOTSP>> temp = extractNonDominated(population);
+        ArrayList<MOTSP> remaining;
+        while (!done){
+            fronts.add(temp.get(0));
+            remaining = temp.get(1);
+            temp = extractNonDominated(remaining);
+            if ((temp.get(0).size()==0)||(temp.get(1).size()==0)){
+                done = true;
+            }
+        }
+        return fronts;
+    }
+
+    public static ArrayList<ArrayList<MOTSP>> extractNonDominated(ArrayList<MOTSP> population){
         ArrayList<MOTSP> pFront = new ArrayList<MOTSP>();
         ArrayList<MOTSP> pBack = new ArrayList<MOTSP>();
         ArrayList<ArrayList<MOTSP>> result = new ArrayList<ArrayList<MOTSP>>();
