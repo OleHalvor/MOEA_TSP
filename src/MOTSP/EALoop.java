@@ -20,28 +20,19 @@ import java.util.Arrays;
  * Created by Ole on 03.05.2016.
  */
 public class EALoop {
-    private static int nGenerations = 100, curGen = 0, popSize = 100;
+    private static int nGenerations = 100, curGen = 0, popSize = 20;
     public static final double mutationRate = 1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
-    public static Fitness fitness = new Fitness();
+    public static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
 
     public static void main (String[] args){
         System.out.println("EALoop running");
-        for (int i=0; i<20; i++){
-            population.add(new MOTSP());
-        }
-        for (int i=0; i<population.size(); i++){
-            System.out.println(i + " Distance, Cost: "+ population.get(i).getDistance()+", "+population.get(i).getCost());
-        }
-
-        for (int i=0; i<population.size(); i++){
-            System.out.println("0 dominates "+i+" "+ Pareto.dominates(population.get(0),population.get(i)));
-        }
+        initPopulation();
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
 
         for (int i =0; i<paretoFronts.size(); i++){
             for ( int k=0; k<paretoFronts.get(i).size(); k++){
-                System.out.println("Front "+i+" Solution #"+k+": "+paretoFronts.get(i).get(k).getDistance()+", "+paretoFronts.get(i).get(k).getCost() );
+                System.out.println("Front "+i+" Solution #"+k+"(distance,cost): "+paretoFronts.get(i).get(k).getDistance()+", "+paretoFronts.get(i).get(k).getCost() );
             }
         }
 
@@ -50,6 +41,11 @@ public class EALoop {
     }
 
     private static MOTSP crossOver(MOTSP p1, MOTSP p2){
+        /*
+        Crossover makes a new empty genome, filled with "-1"s
+        Then it chooses a sequence of DNA from p1 and adds it to the new genome
+        Then it fills the rest of the empty DNA with chromosomes from p2 in sequential order, as long as the chromosome is not already present.
+         */
         int[] p1_gen = p1.getGenome();
         int[] p2_gen = p2.getGenome();
         int[] genome = new int[48];
