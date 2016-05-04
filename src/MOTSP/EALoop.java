@@ -37,6 +37,15 @@ public class EALoop {
         for (int i=0; i<population.size(); i++){
             System.out.println("0 dominates "+i+" "+ Pareto.dominates(population.get(0),population.get(i)));
         }
+        ArrayList<MOTSP> nonDom = Pareto.getParetoSets(population).get(0);
+        ArrayList<MOTSP> dom = Pareto.getParetoSets(population).get(1);
+
+        for (int i=0; i<nonDom.size(); i++){
+            System.out.println("NonDominated #"+i+" "+ nonDom.get(i).getDistance()+", "+nonDom.get(i).getCost());
+        }
+        for (int i=0; i<dom.size(); i++){
+            System.out.println("Dominated #"+i+" "+ dom.get(i).getDistance()+", "+dom.get(i).getCost());
+        }
 
 
 

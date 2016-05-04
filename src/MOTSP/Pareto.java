@@ -19,14 +19,25 @@ public class Pareto {
         return false;
     }
 
-    private static ArrayList<ArrayList<MOTSP>> getParetoSets(ArrayList<MOTSP> solutions){
+
+    public static ArrayList<ArrayList<MOTSP>> getParetoSets(ArrayList<MOTSP> population){
         ArrayList<MOTSP> pFront = new ArrayList<MOTSP>();
         ArrayList<MOTSP> pBack = new ArrayList<MOTSP>();
         ArrayList<ArrayList<MOTSP>> result = new ArrayList<ArrayList<MOTSP>>();
 
-
-
-
+        for (MOTSP s1: population){
+            boolean isDominated = false;
+            for (MOTSP s2: population){
+                if (dominates(s2,s1)) {
+                    isDominated = true;
+                    break;
+                }
+            }
+            if (!isDominated){
+                pFront.add(s1);
+            }
+            else pBack.add(s1);
+        }
         result.add(pFront);
         result.add(pBack);
         return result;
