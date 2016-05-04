@@ -22,14 +22,14 @@ public class Pareto {
 
     public static ArrayList<ArrayList<MOTSP>> getParetoFronts (ArrayList<MOTSP> population){
         ArrayList<ArrayList<MOTSP>> fronts = new ArrayList<ArrayList<MOTSP>>();
-        boolean done = false;
-        ArrayList<ArrayList<MOTSP>> temp = extractNonDominated(population);
+        ArrayList<ArrayList<MOTSP>> tempFront = extractNonDominated(population);
         ArrayList<MOTSP> remaining;
+        boolean done = false;
         while (!done){
-            fronts.add(temp.get(0));
-            remaining = temp.get(1);
-            temp = extractNonDominated(remaining);
-            if ((temp.get(0).size()==0)||(temp.get(1).size()==0)){
+            fronts.add(tempFront.get(0));
+            remaining = tempFront.get(1);
+            tempFront = extractNonDominated(remaining);
+            if ((tempFront.get(0).size()==0)||(tempFront.get(1).size()==0)){
                 done = true;
             }
         }

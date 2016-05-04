@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Created by Ole on 03.05.2016.
  */
 public class EALoop {
-    private static int nGenerations = 100, curGen = 0, popSize = 20;
+    private static int nGenerations = 100, curGen = 0, popSize = 20000;
     public static final double mutationRate = 1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
@@ -17,7 +17,7 @@ public class EALoop {
         System.out.println("EALoop running");
         initPopulation();
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
-        printFronts(paretoFronts);
+        //printFronts(paretoFronts);
 
     }
 
