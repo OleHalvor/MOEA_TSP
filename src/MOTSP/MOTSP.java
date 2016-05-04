@@ -13,7 +13,6 @@ public class MOTSP {
     private int[] genome;
     private double dist_fitness = 0;
     private double cost_fitness = 0;
-    private double tot_fitness  = 0;
 
     public MOTSP(){     //Constructor for new random individual
         generate_random_genome();
@@ -28,11 +27,20 @@ public class MOTSP {
 
     private void generate_random_genome(){  //Generate all integers up to 48 and shuffle them.
         int[] new_gene = new int[48];
-        for (int i =0; i<48; i++){
+        for (int i =0; i<48; i++)
             new_gene[i] = i;
+        this.genome = shuffleArray(new_gene);
+    }
+
+    public void tryToMutate(){
+        System.out.println("mut");
+        Random rand = new Random();
+        if (rand.nextDouble() < EALoop.mutationRate) {
+            int gen1 = rand.nextInt(48), gen2 = rand.nextInt(48 - gen1) + gen1;
+            int tempGen = genome[gen1];
+            genome[gen1] = genome[gen2];
+            genome[gen2] = tempGen;
         }
-        new_gene = shuffleArray(new_gene);
-        this.genome = new_gene;
     }
 
     private static int[] shuffleArray(int[] ar) {   //Used when generating new random genomes
@@ -45,43 +53,18 @@ public class MOTSP {
         }
         return ar;
     }
-
-
+    public void setDistAndCost(int[] distAndCost){
+        this.dist_fitness = distAndCost[0];
+        this.cost_fitness = distAndCost[1];
+    }
     public int[] getGenome(){
         return this.genome;
     }
-
-    private void calc_fitness(){
-        Random rand = new Random();
-        dist_fitness = rand.nextDouble();
-    }
-
-    public void setDistAndCost(int[] distAndCost){
-        if ((distAndCost[0] >= 0)&&(distAndCost[1] >= 0)) {
-            this.dist_fitness = distAndCost[0];
-            this.cost_fitness = distAndCost[1];
-        }
-        else System.out.printf("Wrong distance of cost fitnesses given!");
-    }
-
-
-
-    public void tryToMutate(){
-        Random rand = new Random();
-        if (rand.nextDouble() < EALoop.mutationRate) {
-            System.out.println("mutated!");
-            int gen1 = rand.nextInt(48);
-            int gen2 = rand.nextInt(48 - gen1) + gen1;
-            int tempGen = this.genome[gen1];
-            this.genome[gen1] = this.genome[gen2];
-            this.genome[gen2] = tempGen;
-        }
-    }
-
     public double getDistance(){
         return this.dist_fitness;
     }
     public double getCost(){
         return this.cost_fitness;
     }
+
 }

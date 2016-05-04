@@ -19,19 +19,14 @@ public class Pareto {
         return false;
     }
 
-
     public static ArrayList<ArrayList<MOTSP>> getParetoFronts (ArrayList<MOTSP> population){
         ArrayList<ArrayList<MOTSP>> fronts = new ArrayList<ArrayList<MOTSP>>();
-        ArrayList<ArrayList<MOTSP>> tempFront = extractNonDominated(population);
-        ArrayList<MOTSP> remaining;
-        boolean done = false;
-        while (!done){
-            fronts.add(tempFront.get(0));
-            remaining = tempFront.get(1);
-            tempFront = extractNonDominated(remaining);
-            if ((tempFront.get(0).size()==0)||(tempFront.get(1).size()==0)){
-                done = true;
-            }
+        ArrayList<ArrayList<MOTSP>> tempFronts = extractNonDominated(population);
+        while (true){
+            fronts.add(tempFronts.get(0));
+            tempFronts = extractNonDominated(tempFronts.get(1));
+            if ((tempFronts.get(0).size()==0))
+                break;
         }
         return fronts;
     }
@@ -40,7 +35,6 @@ public class Pareto {
         ArrayList<MOTSP> pFront = new ArrayList<MOTSP>();
         ArrayList<MOTSP> pBack = new ArrayList<MOTSP>();
         ArrayList<ArrayList<MOTSP>> result = new ArrayList<ArrayList<MOTSP>>();
-
         for (MOTSP s1: population){
             boolean isDominated = false;
             for (MOTSP s2: population){
@@ -49,14 +43,11 @@ public class Pareto {
                     break;
                 }
             }
-            if (!isDominated){
+            if (!isDominated)
                 pFront.add(s1);
-            }
-            else {
+            else
                 pBack.add(s1);
-            }
         }
-
         result.add(pFront);
         result.add(pBack);
         return result;

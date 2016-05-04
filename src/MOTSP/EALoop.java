@@ -8,17 +8,16 @@ import java.util.Arrays;
  * Created by Ole on 03.05.2016.
  */
 public class EALoop {
-    private static int nGenerations = 100, curGen = 0, popSize = 20000;
+    private static int nGenerations = 100, curGen = 0, popSize = 4;
     public static final double mutationRate = 1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
 
     public static void main (String[] args){
-        System.out.println("EALoop running");
+        System.out.println("Starting EALoop");
         initPopulation();
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.getParetoFronts(population);
-        //printFronts(paretoFronts);
-
+        printFronts(paretoFronts);
     }
 
     private static MOTSP crossOver(MOTSP p1, MOTSP p2){
@@ -27,9 +26,7 @@ public class EALoop {
         Then it chooses a sequence of DNA from p1 and adds it to the new genome
         Then it fills the rest of the empty DNA with chromosomes from p2 in sequential order, as long as the chromosome is not already present.
          */
-        int[] p1_gen = p1.getGenome();
-        int[] p2_gen = p2.getGenome();
-        int[] genome = new int[48];
+        int[] p1_gen = p1.getGenome(), p2_gen = p2.getGenome(), genome = new int[48];
         Arrays.fill(genome, -1);         //Fills the genome with chromosomes of "-1"
         Random rand = new Random();
         int cut1 = rand.nextInt(48);             //Start of dna sequence from parent 1
