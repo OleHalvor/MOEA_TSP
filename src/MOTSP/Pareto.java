@@ -25,6 +25,9 @@ public class Pareto {
             if ((tempFronts.get(0).size()==0))
                 break;
         }
+        for (int i=0; i<fronts.size(); i++){
+            for (MOTSP m : fronts.get(i).setParetoRank(i));
+        }
         return fronts;
     }
 

@@ -23,6 +23,11 @@ public class EALoop {
         }
     }
 
+    private static ArrayList<MOTSP> getClosestNeighbors(MOTSP m, ArrayList<MOTSP> front){
+        ArrayList<MOTSP> closest = new ArrayList<MOTSP>();
+
+    }
+
     private static MOTSP crossOver(MOTSP p1, MOTSP p2){
         /*
         Crossover makes a new empty genome, filled with "-1"s
