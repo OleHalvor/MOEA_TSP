@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EALoop {
-    private static int nGenerations = 1, curGen = 0, popSize = 20;
+    private static int nGenerations = 10, curGen = 1, popSize = 1000;
     public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
@@ -14,11 +14,12 @@ public class EALoop {
         System.out.println("Starting EALoop");
         initPopulation();
 
-        while (curGen < nGenerations){
+        while (curGen <= nGenerations){
+            System.out.println("Generation: "+curGen+" of "+nGenerations);//printing generation count
 
             //Calculate Pareto Fronts
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
-            printFronts(paretoFronts);//print Pareto fronts
+            //printFronts(paretoFronts);//print Pareto fronts
 
             // Select Parents
             ArrayList<MOTSP> parents = ParentSelection(population, paretoFronts);
