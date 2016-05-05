@@ -7,8 +7,8 @@ public class MOTSP {
 
     // http://www.theprojectspot.com/tutorial-post/applying-a-genetic-algorithm-to-the-travelling-salesman-problem/5
 
-    private int paretoRank;
 
+    private int paretoRank;
     private int[] genome;
     private double dist_fitness = 0;
     private double cost_fitness = 0;
@@ -41,6 +41,8 @@ public class MOTSP {
             genome[gen2] = tempGen;
         }
     }
+
+
 
     private static int[] shuffleArray(int[] ar) {   //Used when generating new random genomes
         Random rnd = ThreadLocalRandom.current();
