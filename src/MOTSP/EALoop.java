@@ -64,12 +64,65 @@ public class EALoop {
         parentSelection();
     }
 
-    private static void parentSelection(){
-        //return
+    private static ArrayList<MOTSP> ParentSelection(ArrayList<MOTSP> mostps, ArrayList<ArrayList<MOTSP>> paretoList){
+        Random rng = new Random();
+        ArrayList<MOTSP> parents = new ArrayList<MOTSP>();
+        //
+        for (int n=0; n<popSize*2; n++) {
+            MOTSP parentOne = mostps.get(rng.nextInt(mostps.size()));
+            MOTSP parentTwo = mostps.get(rng.nextInt(mostps.size()));
+            //
+            if (parentOne.getParetoRank() < parentTwo.getParetoRank()) {
+                parents.add(parentOne);
+            } else if (parentTwo.getParetoRank() < parentOne.getParetoRank()) {
+                parents.add(parentTwo);
+            } else {
+                double oneDist = crowdingDistance(parentOne, paretoList.get(parentOne.getParetoRank()));
+                double twoDist = crowdingDistance(parentTwo, paretoList.get(parentTwo.getParetoRank()));
+                if (oneDist < twoDist) {
+                    parents.add(parentOne);
+                } else {
+                    parents.add(parentTwo);
+                }
+            }
+        }
+        return parents;
     }
 
     private static void adultSelection(){
 
+    }
+
+    private static double crowdingDistance(MOTSP m, ArrayList<MOTSP> pareto){
+        MOTSP closeHighDist = new MOTSP();
+        MOTSP closeLowDist = new MOTSP();
+        //
+        Double distHigh = Double.MAX_VALUE;
+        Double distLow = Double.MAX_VALUE;
+        //
+        for (MOTSP motsp : pareto){
+            if (motsp.getDistance() < m.getDistance()){
+                double dist = Math.sqrt( Math.pow(m.getDistance()-motsp.getDistance(),2) + Math.pow(m.getCost()-motsp.getCost(),2) );
+                if (dist < distLow){
+                    dist = distLow;
+                    closeLowDist = motsp;
+                }
+            }
+            else{
+                double dist = Math.sqrt( Math.pow(motsp.getDistance()-m.getDistance(),2) + Math.pow(motsp.getCost()-m.getCost(),2) );
+                if (dist < distHigh){
+                    dist = distHigh;
+                    closeHighDist = motsp;
+                }
+            }
+
+        }
+
+        if (distHigh==Double.MAX_VALUE){
+            //TODO: Kanskje fikse dette?
+        }
+
+        return Math.sqrt( Math.pow(closeHighDist.getDistance()-closeLowDist.getDistance(),2) + Math.pow(closeHighDist.getCost()-closeLowDist.getCost(),2) );
     }
 
     private static void printFronts(ArrayList<ArrayList<MOTSP>> paretoFronts){

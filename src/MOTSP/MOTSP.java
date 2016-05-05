@@ -7,10 +7,11 @@ public class MOTSP {
 
     // http://www.theprojectspot.com/tutorial-post/applying-a-genetic-algorithm-to-the-travelling-salesman-problem/5
 
+    private int paretoRank;
+
     private int[] genome;
     private double dist_fitness = 0;
     private double cost_fitness = 0;
-
     public MOTSP(){     //Constructor for new random individual
         generate_random_genome();
         setDistAndCost(Fitness.getDistanceAndCost(this));
@@ -49,6 +50,7 @@ public class MOTSP {
         }
         return ar;
     }
+
     public void setDistAndCost(int[] distAndCost){
         this.dist_fitness = distAndCost[0];
         this.cost_fitness = distAndCost[1];
@@ -61,6 +63,14 @@ public class MOTSP {
     }
     public double getCost(){
         return this.cost_fitness;
+    }
+    public void setParetoRank(int paretoRank) {
+        this.paretoRank = paretoRank;
+    }
+
+    public int getParetoRank() {
+
+        return paretoRank;
     }
 
 }
