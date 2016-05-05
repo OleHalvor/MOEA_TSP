@@ -10,9 +10,6 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-/**
- * Created by Olli on 04.05.2016.
- */
 
 public class Fitness {
     private static ArrayList<ArrayList<Integer>> distances = new ArrayList<ArrayList<Integer>>();

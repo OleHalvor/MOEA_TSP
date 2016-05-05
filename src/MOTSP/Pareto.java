@@ -2,9 +2,6 @@ package MOTSP;
 
 import java.util.ArrayList;
 
-/**
- * Created by Olli on 04.05.2016.
- */
 public class Pareto {
 
     public static boolean dominates(MOTSP i1, MOTSP i2){ //Checks if i1 dominates i2

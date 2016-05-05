@@ -1,8 +1,5 @@
 package MOTSP;
 
-/**
- * Created by Ole on 03.05.2016.
- */
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,7 +30,6 @@ public class MOTSP {
     }
 
     public void tryToMutate(){
-        System.out.println("mut");
         Random rand = new Random();
         if (rand.nextDouble() < EALoop.mutationRate) {
             int gen1 = rand.nextInt(48), gen2 = rand.nextInt(48 - gen1) + gen1;

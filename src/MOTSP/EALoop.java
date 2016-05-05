@@ -4,14 +4,11 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by Ole on 03.05.2016.
- */
 public class EALoop {
     private static int nGenerations = 100, curGen = 0, popSize = 20;
-    public static final double mutationRate = 1;
+    public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
-    private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java read the distance and cost files
+    private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
 
     public static void main (String[] args){
         System.out.println("Starting EALoop");
