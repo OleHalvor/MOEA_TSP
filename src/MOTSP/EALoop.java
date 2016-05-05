@@ -65,9 +65,7 @@ public class EALoop {
 
 
 
-    private static void makeChildren(){
-        parentSelection();
-    }
+
 
     private static ArrayList<MOTSP> ParentSelection(ArrayList<MOTSP> mostps, ArrayList<ArrayList<MOTSP>> paretoList){
         Random rng = new Random();
@@ -94,8 +92,31 @@ public class EALoop {
         return parents;
     }
 
-    private static void adultSelection(){
+    private static ArrayList<MOTSP> adultSelection(ArrayList<MOTSP> parents, ArrayList<MOTSP> children){
+        parents.addAll(children);
+        ArrayList<ArrayList<MOTSP>> pareto = Pareto.generateParetoFronts(parents);
+        for (MOTSP m : parents){
+            m.setCrowdingDistance(crowdingDistance(m, pareto.get(m.getParetoRank())));
+        }
+        //
+        ArrayList<MOTSP> newPopulation = new ArrayList<MOTSP>();
+        int n=popSize;
+        int index = 0;
+        while(n > 0){
+            if (pareto.get(index).size() <= n){
+                newPopulation.addAll(pareto.get(index));
+            }
+            else {
 
+                ArrayList<MOTSP> sortedArray = new ArrayList<MOTSP>();
+                while(n > 0){
+                    newPopulation.add();
+                }
+            }
+            n -= pareto.get(index).size();
+            index += 1;
+        }
+        return newPopulation;
     }
 
     private static double crowdingDistance(MOTSP m, ArrayList<MOTSP> pareto){
@@ -123,10 +144,9 @@ public class EALoop {
 
         }
 
-        if (distHigh==Double.MAX_VALUE){
+        /**if (distHigh==Double.MAX_VALUE){
             //TODO: Kanskje fikse dette?
-        }
-
+        }**/
         return Math.sqrt( Math.pow(closeHighDist.getDistance()-closeLowDist.getDistance(),2) + Math.pow(closeHighDist.getCost()-closeLowDist.getCost(),2) );
     }
 

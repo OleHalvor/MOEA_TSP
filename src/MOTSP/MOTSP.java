@@ -12,6 +12,8 @@ public class MOTSP {
     private int[] genome;
     private double dist_fitness = 0;
     private double cost_fitness = 0;
+    private double crowdingDistance = 0;
+
     public MOTSP(){     //Constructor for new random individual
         generate_random_genome();
         setDistAndCost(Fitness.getDistanceAndCost(this));
@@ -55,6 +57,8 @@ public class MOTSP {
         this.dist_fitness = distAndCost[0];
         this.cost_fitness = distAndCost[1];
     }
+
+
     public int[] getGenome(){
         return this.genome;
     }
@@ -67,10 +71,17 @@ public class MOTSP {
     public void setParetoRank(int paretoRank) {
         this.paretoRank = paretoRank;
     }
-
     public int getParetoRank() {
 
         return paretoRank;
+    }
+
+    public double getCrowdingDistance() {
+        return crowdingDistance;
+    }
+
+    public void setCrowdingDistance(double crowdingDistance) {
+        this.crowdingDistance = crowdingDistance;
     }
 
 }
