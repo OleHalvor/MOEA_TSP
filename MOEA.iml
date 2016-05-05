@@ -12,5 +12,6 @@
     <orderEntry type="library" name="stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="org.apache.xmlbeans:xmlbeans:2.6.0" level="project" />
     <orderEntry type="library" name="commons-codec:commons-codec:1.9" level="project" />
+    <orderEntry type="library" name="jfree:jfreechart:1.0.13" level="project" />
   </component>
 </module>

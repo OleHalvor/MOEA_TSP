@@ -1,12 +1,20 @@
 package MOTSP;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EALoop {
-    private static int nGenerations = 10, curGen = 1, popSize = 1000;
-    public static final double mutationRate = 0.1;
+    private static int nGenerations = 200, curGen = 1, popSize = 2000;
+    public static final double mutationRate = 0.3;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
 
@@ -26,13 +34,27 @@ public class EALoop {
 
             //Make children
             ArrayList<MOTSP> children = makeChildren(parents);
+            ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
+            for (int i=0; i<children.size(); i++){
+                for (int k=0; k<children.size(); k++){
+                    if (i!=k){
+                        if (children.get(i).getGenome()==children.get(k).getGenome()){
+                            toBeRemoved.add(children.get(k));
+                        }
+                    }
+                }
+            }
+            children.removeAll(toBeRemoved);
 
             //Select adults from parents and children
-            population = adultSelection(parents, children);
+            population = adultSelection(population, children);
 
             //increment generation counter
             curGen += 1;
         }
+        ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
+        printFronts(paretoFronts);//print Pareto fronts
+        scatter();
     }
 
     private static void initPopulation(){
@@ -130,6 +152,7 @@ public class EALoop {
                 int index2 = 0;
                 while(n > 0){
                     newPopulation.add(sortedArray.get(index2));
+                    //if (!newPopulation.contains(sortedArray.get(index2)))newPopulation.add(sortedArray.get(index2));
                     n -= 1;
                     index2 += 1;
                 }
@@ -171,11 +194,37 @@ public class EALoop {
     }
 
     private static void printFronts(ArrayList<ArrayList<MOTSP>> paretoFronts){
-        for (int i =0; i<paretoFronts.size(); i++){
-            for ( int k=0; k<paretoFronts.get(i).size(); k++){
-                System.out.println("Front "+i+" Solution #"+k+"(distance,cost): "+paretoFronts.get(i).get(k).getDistance()+", "+paretoFronts.get(i).get(k).getCost() );
+        //for (int i =0; i<paretoFronts.size(); i++){
+            for ( int k=0; k<paretoFronts.get(0).size(); k++){
+                System.out.println("Front "+0+" Solution #"+k+"(distance,cost): "+paretoFronts.get(0).get(k).getDistance()+", "+paretoFronts.get(0).get(k).getCost() );
             }
-        }
+      //  }
     }
 
+    private static XYDataset createDataset() {
+        XYSeriesCollection result = new XYSeriesCollection();
+        XYSeries series = new XYSeries("Random");
+        for (int i = 0; i <= population.size()-1; i++) {
+            double x = population.get(i).getDistance();
+            double y = population.get(i).getCost();
+            series.add(x, y);
+        }
+        result.addSeries(series);
+        return result;
+    }
+    private static void scatter() {
+        JFreeChart chart = ChartFactory.createScatterPlot(
+                "Scatter Plot", // chart title
+                "X", // x axis label
+                "Y", // y axis label
+                createDataset(), // data  ***-----PROBLEM------***
+                PlotOrientation.VERTICAL,
+                true, // include legend
+                true, // tooltips
+                false // urls
+        );
+        ChartFrame frame = new ChartFrame("First", chart);
+        frame.pack();
+        frame.setVisible(true);
+    }
 }
