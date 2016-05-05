@@ -15,7 +15,6 @@ public class EALoop {
         initPopulation();
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
         printFronts(paretoFronts);
-
     }
 
     private static void initPopulation(){
@@ -106,24 +105,23 @@ public class EALoop {
         while(n > 0){
             if (pareto.get(index).size() <= n){
                 newPopulation.addAll(pareto.get(index));
+                n -= pareto.get(index).size();
             }
             else {
 
                 ArrayList<MOTSP> sortedArray = pareto.get(index);
                 Collections.sort(sortedArray, new CustomComparator());
-
+                int index2 = 0;
                 while(n > 0){
-                    newPopulation.add();
+                    newPopulation.add(sortedArray.get(index2));
+                    n -= 1;
+                    index2 += 1;
                 }
             }
-            n -= pareto.get(index).size();
             index += 1;
         }
         return newPopulation;
     }
-
-
-
 
     private static double crowdingDistance(MOTSP m, ArrayList<MOTSP> pareto){
         MOTSP closeHighDist = new MOTSP();
