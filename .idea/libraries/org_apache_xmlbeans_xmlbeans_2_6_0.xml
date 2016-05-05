@@ -4,6 +4,8 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/xmlbeans-2.6.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/stax-api-1.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xmlbeans-2.6.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/stax-api-1.0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

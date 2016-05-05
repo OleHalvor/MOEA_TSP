@@ -3,6 +3,7 @@
     <properties maven-id="stax:stax-api:1.0.1" />
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/stax-api-1.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/stax-api-1.0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
