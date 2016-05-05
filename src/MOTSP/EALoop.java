@@ -105,15 +105,17 @@ public class EALoop {
         while(n > 0){
             if (pareto.get(index).size() <= n){
                 newPopulation.addAll(pareto.get(index));
+                n -= pareto.get(index).size();
             }
             else {
-
                 ArrayList<MOTSP> sortedArray = new ArrayList<MOTSP>();
+                int index2 = 0;
                 while(n > 0){
-                    newPopulation.add();
+                    newPopulation.add(sortedArray.get(index2));
+                    n -= 1;
+                    index2 += 1;
                 }
             }
-            n -= pareto.get(index).size();
             index += 1;
         }
         return newPopulation;
