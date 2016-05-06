@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EALoop {
-    private static int nGenerations = 200, curGen = 1, popSize = 2000;
-    public static final double mutationRate = 0.3;
+    private static int nGenerations = 1000, curGen = 1, popSize = 2000;
+    public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
 
@@ -34,7 +34,7 @@ public class EALoop {
 
             //Make children
             ArrayList<MOTSP> children = makeChildren(parents);
-            ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
+            /*ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
             for (int i=0; i<children.size(); i++){
                 for (int k=0; k<children.size(); k++){
                     if (i!=k){
@@ -44,7 +44,7 @@ public class EALoop {
                     }
                 }
             }
-            children.removeAll(toBeRemoved);
+            children.removeAll(toBeRemoved);*/
 
             //Select adults from parents and children
             population = adultSelection(population, children);
@@ -173,23 +173,19 @@ public class EALoop {
             if (motsp.getDistance() < m.getDistance()){
                 double dist = Math.sqrt( Math.pow(m.getDistance()-motsp.getDistance(),2) + Math.pow(m.getCost()-motsp.getCost(),2) );
                 if (dist < distLow){
-                    dist = distLow;
+                    distLow = dist;
                     closeLowDist = motsp;
                 }
             }
             else{
                 double dist = Math.sqrt( Math.pow(motsp.getDistance()-m.getDistance(),2) + Math.pow(motsp.getCost()-m.getCost(),2) );
                 if (dist < distHigh){
-                    dist = distHigh;
+                    distHigh = dist;
                     closeHighDist = motsp;
                 }
             }
 
         }
-
-        /**if (distHigh==Double.MAX_VALUE){
-            //TODO: Kanskje fikse dette?
-        }**/
         return Math.sqrt( Math.pow(closeHighDist.getDistance()-closeLowDist.getDistance(),2) + Math.pow(closeHighDist.getCost()-closeLowDist.getCost(),2) );
     }
 
@@ -214,9 +210,9 @@ public class EALoop {
     }
     private static void scatter() {
         JFreeChart chart = ChartFactory.createScatterPlot(
-                "Scatter Plot", // chart title
-                "X", // x axis label
-                "Y", // y axis label
+                "Fitness of MOTSP", // chart title
+                "Distance", // x axis label
+                "Cost", // y axis label
                 createDataset(), // data  ***-----PROBLEM------***
                 PlotOrientation.VERTICAL,
                 true, // include legend
