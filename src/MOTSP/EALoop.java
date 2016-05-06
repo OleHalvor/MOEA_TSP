@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EALoop {
-    private static int nGenerations = 1000, curGen = 1, popSize = 2000;
-    public static final double mutationRate = 0.1;
+    private static int nGenerations = 500, curGen = 1, popSize = 5000;
+    public static final double mutationRate = 0.2;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
+    private static boolean removeDupes = true;
 
     public static void main (String[] args){
         System.out.println("Starting EALoop");
@@ -32,19 +33,23 @@ public class EALoop {
             // Select Parents
             ArrayList<MOTSP> parents = ParentSelection(population, paretoFronts);
 
+
             //Make children
             ArrayList<MOTSP> children = makeChildren(parents);
-            /*ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
-            for (int i=0; i<children.size(); i++){
-                for (int k=0; k<children.size(); k++){
-                    if (i!=k){
-                        if (children.get(i).getGenome()==children.get(k).getGenome()){
-                            toBeRemoved.add(children.get(k));
+
+            if (removeDupes) {
+                ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
+                for (int i = 0; i < children.size(); i++) {
+                    for (int k = 0; k < children.size(); k++) {
+                        if (i != k) {
+                            if (children.get(i).getDistance() == children.get(k).getDistance()) {
+                                toBeRemoved.add(children.get(k));
+                            }
                         }
                     }
                 }
+                children.removeAll(toBeRemoved);
             }
-            children.removeAll(toBeRemoved);*/
 
             //Select adults from parents and children
             population = adultSelection(population, children);
@@ -54,7 +59,19 @@ public class EALoop {
         }
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
         printFronts(paretoFronts);//print Pareto fronts
-        scatter();
+        plot();
+    }
+
+    private static int getNumberOfDups(ArrayList<MOTSP> m){
+        int count = 0;
+        for (int i=0; i<m.size(); i++){
+            for (int k=0; k<m.size(); k++){
+                if (i!=k){
+                    if ((m.get(i).getDistance()==m.get(k).getDistance())||(m.get(i).getCost()==m.get(k).getCost())) count++;
+                }
+            }
+        }
+        return count;
     }
 
     private static void initPopulation(){
@@ -152,7 +169,6 @@ public class EALoop {
                 int index2 = 0;
                 while(n > 0){
                     newPopulation.add(sortedArray.get(index2));
-                    //if (!newPopulation.contains(sortedArray.get(index2)))newPopulation.add(sortedArray.get(index2));
                     n -= 1;
                     index2 += 1;
                 }
@@ -199,7 +215,7 @@ public class EALoop {
 
     private static XYDataset createDataset() {
         XYSeriesCollection result = new XYSeriesCollection();
-        XYSeries series = new XYSeries("Random");
+        XYSeries series = new XYSeries("MOTSP");
         for (int i = 0; i <= population.size()-1; i++) {
             double x = population.get(i).getDistance();
             double y = population.get(i).getCost();
@@ -208,9 +224,10 @@ public class EALoop {
         result.addSeries(series);
         return result;
     }
-    private static void scatter() {
+
+    private static void plot() {
         JFreeChart chart = ChartFactory.createScatterPlot(
-                "Fitness of MOTSP", // chart title
+                "nGenerations: "+nGenerations+", Mutation rate: "+mutationRate+", PopSize: "+popSize, // chart title
                 "Distance", // x axis label
                 "Cost", // y axis label
                 createDataset(), // data  ***-----PROBLEM------***
