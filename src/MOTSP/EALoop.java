@@ -1,23 +1,33 @@
 package MOTSP;
 
+import javafx.scene.layout.Pane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYDotRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import java.awt.*;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EALoop {
-    private static int nGenerations = 500, curGen = 1, popSize = 5000;
-    public static final double mutationRate = 0.2;
+    private static int nGenerations = 1000, curGen = 1, popSize = 3000;
+    public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
     private static boolean removeDupes = true;
+
+    private ArrayList<XYSeriesCollection> seriesArrayList = new ArrayList<XYSeriesCollection>();
+
 
     public static void main (String[] args){
         System.out.println("Starting EALoop");
@@ -56,10 +66,13 @@ public class EALoop {
 
             //increment generation counter
             curGen += 1;
+            plotAll();
+
         }
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
         printFronts(paretoFronts);//print Pareto fronts
-        plot();
+
+
     }
 
     private static int getNumberOfDups(ArrayList<MOTSP> m){
@@ -165,7 +178,11 @@ public class EALoop {
             }
             else {
                 ArrayList<MOTSP> sortedArray = pareto.get(index);
-                Collections.sort(sortedArray, new CustomComparator());
+                try{
+                    Collections.sort(sortedArray, new CustomComparator());
+                }catch (Exception e){
+                    System.out.println("Violated general contract...");
+                }
                 int index2 = 0;
                 while(n > 0){
                     newPopulation.add(sortedArray.get(index2));
@@ -213,7 +230,19 @@ public class EALoop {
       //  }
     }
 
-    private static XYDataset createDataset() {
+    private static XYDataset createDatasetBest() {
+        XYSeriesCollection result = new XYSeriesCollection();
+        XYSeries series2 = new XYSeries("MOTSP");
+        ArrayList<MOTSP> pareto = Pareto.generateParetoFronts(population).get(0);
+        for (int i = 0; i <= pareto.size()-1; i++) {
+            double x = pareto.get(i).getDistance();
+            double y = pareto.get(i).getCost();
+            series2.add(x, y);
+        }
+        result.addSeries(series2);
+        return result;
+    }
+    private static XYDataset createDatasetAll() {
         XYSeriesCollection result = new XYSeriesCollection();
         XYSeries series = new XYSeries("MOTSP");
         for (int i = 0; i <= population.size()-1; i++) {
@@ -225,19 +254,38 @@ public class EALoop {
         return result;
     }
 
-    private static void plot() {
+    private static void plotAll() {
+        XYDataset best = createDatasetBest();
+        XYDataset all = createDatasetAll();
+
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "nGenerations: "+nGenerations+", Mutation rate: "+mutationRate+", PopSize: "+popSize, // chart title
                 "Distance", // x axis label
                 "Cost", // y axis label
-                createDataset(), // data  ***-----PROBLEM------***
+                createDatasetAll(), // data  ***-----PROBLEM------***
                 PlotOrientation.VERTICAL,
                 true, // include legend
                 true, // tooltips
                 false // urls
         );
+        XYPlot xyPlot = (XYPlot) chart.getPlot();
+        xyPlot.setDataset(0, best);
+        xyPlot.setDataset(1, all);
+        XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
+        XYDotRenderer renderer1 = new XYDotRenderer();
+        xyPlot.setRenderer(0, renderer0);
+        xyPlot.setRenderer(1, renderer1);
+        xyPlot.getRendererForDataset(xyPlot.getDataset(0)).setSeriesPaint(0, Color.red);
+        xyPlot.getRendererForDataset(xyPlot.getDataset(1)).setSeriesPaint(0, Color.blue);
+
+        NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
+        domain.setRange(0, 200000);
+        domain.setVerticalTickLabels(true);
+        NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
+        range.setRange(0, 2000);
         ChartFrame frame = new ChartFrame("First", chart);
         frame.pack();
         frame.setVisible(true);
     }
+
 }
