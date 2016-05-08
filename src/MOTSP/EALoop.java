@@ -20,14 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EALoop {
-    private static int nGenerations = 1000, curGen = 1, popSize = 3000;
-    public static final double mutationRate = 0.1;
+    private static int nGenerations = 100, curGen = 1, popSize = 2000;
+    public static final double mutationRate = 0.025;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
-    private static boolean removeDupes = true;
-
-    private ArrayList<XYSeriesCollection> seriesArrayList = new ArrayList<XYSeriesCollection>();
-
 
     public static void main (String[] args){
         System.out.println("Starting EALoop");
@@ -38,53 +34,53 @@ public class EALoop {
 
             //Calculate Pareto Fronts
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
-            //printFronts(paretoFronts);//print Pareto fronts
+            //Render visualization
+            if (curGen % 100 == 0) {
+                plotAll(paretoFronts);
+            }
 
             // Select Parents
             ArrayList<MOTSP> parents = ParentSelection(population, paretoFronts);
 
-
             //Make children
             ArrayList<MOTSP> children = makeChildren(parents);
 
-            if (removeDupes) {
-                ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
-                for (int i = 0; i < children.size(); i++) {
-                    for (int k = 0; k < children.size(); k++) {
-                        if (i != k) {
-                            if (children.get(i).getDistance() == children.get(k).getDistance()) {
-                                toBeRemoved.add(children.get(k));
-                            }
-                        }
-                    }
-                }
-                children.removeAll(toBeRemoved);
-            }
+            //Remove duplicate children
+            children = removeDupes(children,population);
 
             //Select adults from parents and children
             population = adultSelection(population, children);
 
             //increment generation counter
             curGen += 1;
-            plotAll();
-
         }
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
         printFronts(paretoFronts);//print Pareto fronts
+        Pareto.shutDown();
 
 
     }
 
-    private static int getNumberOfDups(ArrayList<MOTSP> m){
-        int count = 0;
-        for (int i=0; i<m.size(); i++){
-            for (int k=0; k<m.size(); k++){
-                if (i!=k){
-                    if ((m.get(i).getDistance()==m.get(k).getDistance())||(m.get(i).getCost()==m.get(k).getCost())) count++;
+    private static ArrayList<MOTSP> removeDupes(ArrayList<MOTSP> children,ArrayList<MOTSP> population){
+        ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
+        for (int i = 0; i < children.size(); i++) {
+            for (int k = 0; k < children.size(); k++) {
+                if (i != k) {
+                    if (children.get(i).getDistance() == children.get(k).getDistance()) {
+                        toBeRemoved.add(children.get(k));
+                    }
+                }
+            }
+            for (int k = 0; k < population.size(); k++) {
+                if (i != k) {
+                    if (children.get(i).getDistance() == population.get(k).getDistance()) {
+                        toBeRemoved.add(children.get(i));
+                    }
                 }
             }
         }
-        return count;
+        children.removeAll(toBeRemoved);
+        return children;
     }
 
     private static void initPopulation(){
@@ -181,7 +177,6 @@ public class EALoop {
                 try{
                     Collections.sort(sortedArray, new CustomComparator());
                 }catch (Exception e){
-                    System.out.println("Violated general contract...");
                 }
                 int index2 = 0;
                 while(n > 0){
@@ -230,10 +225,10 @@ public class EALoop {
       //  }
     }
 
-    private static XYDataset createDatasetBest() {
+    private static XYDataset createDatasetBest(ArrayList<ArrayList<MOTSP>> paretoFront) {
         XYSeriesCollection result = new XYSeriesCollection();
-        XYSeries series2 = new XYSeries("MOTSP");
-        ArrayList<MOTSP> pareto = Pareto.generateParetoFronts(population).get(0);
+        XYSeries series2 = new XYSeries("Non-Dominated");
+        ArrayList<MOTSP> pareto = paretoFront.get(0);
         for (int i = 0; i <= pareto.size()-1; i++) {
             double x = pareto.get(i).getDistance();
             double y = pareto.get(i).getCost();
@@ -242,9 +237,10 @@ public class EALoop {
         result.addSeries(series2);
         return result;
     }
+
     private static XYDataset createDatasetAll() {
         XYSeriesCollection result = new XYSeriesCollection();
-        XYSeries series = new XYSeries("MOTSP");
+        XYSeries series = new XYSeries("Dominated");
         for (int i = 0; i <= population.size()-1; i++) {
             double x = population.get(i).getDistance();
             double y = population.get(i).getCost();
@@ -254,12 +250,12 @@ public class EALoop {
         return result;
     }
 
-    private static void plotAll() {
-        XYDataset best = createDatasetBest();
+    private static void plotAll(ArrayList<ArrayList<MOTSP>> paretoFronts) {
+        XYDataset best = createDatasetBest(paretoFronts);
         XYDataset all = createDatasetAll();
 
         JFreeChart chart = ChartFactory.createScatterPlot(
-                "nGenerations: "+nGenerations+", Mutation rate: "+mutationRate+", PopSize: "+popSize, // chart title
+                "Generation: "+curGen+", Mutation rate: "+mutationRate+", PopSize: "+popSize, // chart title
                 "Distance", // x axis label
                 "Cost", // y axis label
                 createDatasetAll(), // data  ***-----PROBLEM------***
@@ -279,11 +275,11 @@ public class EALoop {
         xyPlot.getRendererForDataset(xyPlot.getDataset(1)).setSeriesPaint(0, Color.blue);
 
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
-        domain.setRange(0, 200000);
+        domain.setRange(25000, 150000);
         domain.setVerticalTickLabels(true);
         NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
-        range.setRange(0, 2000);
-        ChartFrame frame = new ChartFrame("First", chart);
+        range.setRange(200, 1600);
+        ChartFrame frame = new ChartFrame("MOTSP", chart);
         frame.pack();
         frame.setVisible(true);
     }
