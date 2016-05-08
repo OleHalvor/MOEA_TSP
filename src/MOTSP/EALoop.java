@@ -18,12 +18,22 @@ import java.awt.*;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class EALoop {
-    private static int nGenerations = 100, curGen = 1, popSize = 2000;
-    public static final double mutationRate = 0.025;
+    private static int nGenerations = 100000, curGen = 1, popSize = 2000;
+    public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
+
+    //MultiProcessing Variables
+    static ExecutorService service = Executors.newFixedThreadPool(4);
+    static Future<ArrayList<MOTSP>> task;
+    static Future<ArrayList<MOTSP>> task1;
+    static Future<ArrayList<MOTSP>> task2;
+    static Future<ArrayList<MOTSP>> task3;
 
     public static void main (String[] args){
         System.out.println("Starting EALoop");
@@ -34,8 +44,9 @@ public class EALoop {
 
             //Calculate Pareto Fronts
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
+
             //Render visualization
-            if (curGen % 100 == 0) {
+            if (curGen % 20 == 0) {
                 plotAll(paretoFronts);
             }
 
@@ -61,24 +72,22 @@ public class EALoop {
 
     }
 
+
+
+
     private static ArrayList<MOTSP> removeDupes(ArrayList<MOTSP> children,ArrayList<MOTSP> population){
+        task     = service.submit(new MPDupRemover( children, population, 0));
+        task1    = service.submit(new MPDupRemover( children, population, 1));
+        task2    = service.submit(new MPDupRemover( children, population, 2));
+        task3    = service.submit(new MPDupRemover( children, population, 3));
         ArrayList<MOTSP> toBeRemoved = new ArrayList<MOTSP>();
-        for (int i = 0; i < children.size(); i++) {
-            for (int k = 0; k < children.size(); k++) {
-                if (i != k) {
-                    if (children.get(i).getDistance() == children.get(k).getDistance()) {
-                        toBeRemoved.add(children.get(k));
-                    }
-                }
-            }
-            for (int k = 0; k < population.size(); k++) {
-                if (i != k) {
-                    if (children.get(i).getDistance() == population.get(k).getDistance()) {
-                        toBeRemoved.add(children.get(i));
-                    }
-                }
-            }
-        }
+        try {
+            toBeRemoved.addAll(task.get());
+            toBeRemoved.addAll(task1.get());
+            toBeRemoved.addAll(task2.get());
+            toBeRemoved.addAll(task3.get());
+        }catch (Exception e){e.printStackTrace();}
+
         children.removeAll(toBeRemoved);
         return children;
     }
@@ -278,7 +287,7 @@ public class EALoop {
         domain.setRange(25000, 150000);
         domain.setVerticalTickLabels(true);
         NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
-        range.setRange(200, 1600);
+        range.setRange(200, 2000);
         ChartFrame frame = new ChartFrame("MOTSP", chart);
         frame.pack();
         frame.setVisible(true);
