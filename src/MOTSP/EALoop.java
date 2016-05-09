@@ -44,8 +44,9 @@ public class EALoop {
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
 
             //Render visualization
-            if (curGen % 10 == 0) {
+            if (curGen % 30 == 0) {
                 plotAll(paretoFronts);
+                plotNonDominated(paretoFronts);
             }
 
             // Select Parents
@@ -68,9 +69,6 @@ public class EALoop {
         Pareto.shutDown();
         service.shutdown();
     }
-
-
-
 
     private static ArrayList<MOTSP> removeDupes(ArrayList<MOTSP> children,ArrayList<MOTSP> population){
         task     = service.submit(new MPDupRemover( children, population, 0));
@@ -313,7 +311,7 @@ public class EALoop {
         XYDataset worst = createDatasetWorst();
 
         JFreeChart chart = ChartFactory.createScatterPlot(
-                "Generation: "+curGen+", Mutation rate: "+mutationRate+", PopSize: "+popSize, // chart title
+                "Generation: "+curGen+", Mutation rate: "+mutationRate+", PopSize: "+popSize+", ParetoFront size: "+paretoFronts.get(0).size(), // chart title
                 "Distance", // x axis label
                 "Cost", // y axis label
                 createDatasetAll(), // data  ***-----PROBLEM------***
@@ -342,10 +340,44 @@ public class EALoop {
 
 
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
-        domain.setRange(25000, 180000);
+        //domain.setRange(25000, 180000);
         domain.setVerticalTickLabels(true);
         NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
-        range.setRange(200, 2000);
+        //range.setRange(200, 2000);
+        ChartFrame frame = new ChartFrame("MOTSP", chart);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private static void plotNonDominated(ArrayList<ArrayList<MOTSP>> paretoFronts) {
+        XYDataset best = createDatasetBest(paretoFronts);
+        XYDataset worst = createDatasetWorst();
+
+        JFreeChart chart = ChartFactory.createScatterPlot(
+                "Generation: "+curGen+", Mutation rate: "+mutationRate+", PopSize: "+popSize+", ParetoFront size: "+paretoFronts.get(0).size(), // chart title
+                "Distance", // x axis label
+                "Cost", // y axis label
+                createDatasetAll(), // data  ***-----PROBLEM------***
+                PlotOrientation.VERTICAL,
+                true, // include legend
+                true, // tooltips
+                false // urls
+        );
+        XYPlot xyPlot = (XYPlot) chart.getPlot();
+        xyPlot.setDataset(0, best);
+
+
+        XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();
+        xyPlot.setRenderer(0, renderer2);
+
+        xyPlot.getRendererForDataset(xyPlot.getDataset(0)).setSeriesPaint(0, Color.red);
+        renderer2.setSeriesLinesVisible(2,true);
+        renderer2.setSeriesLinesVisible(0,true);
+        NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
+        //domain.setRange(25000, 180000);
+        domain.setVerticalTickLabels(true);
+        NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
+        //range.setRange(200, 2000);
         ChartFrame frame = new ChartFrame("MOTSP", chart);
         frame.pack();
         frame.setVisible(true);
