@@ -22,8 +22,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class EALoop {
-    private static int nGenerations = 500000, curGen = 1, popSize = 1500;
+    private static int nGenerations = 1550, curGen = 1, popSize = 500;
     public static final double mutationRate = 0.05;
+    public static final int printGraph = 50;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
 
@@ -39,13 +40,14 @@ public class EALoop {
         initPopulation();
 
         while (curGen <= nGenerations){
-            System.out.println("Generation: "+curGen+" of "+nGenerations);//printing generation count
+
 
             //Calculate Pareto Fronts
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
 
             //Render visualization
-            if (curGen % 100 == 0) {
+            if (curGen % printGraph == 0) {
+                System.out.println("Generation: "+curGen+" of "+nGenerations);//printing generation count
                 plotAll(paretoFronts);
                 //plotNonDominated(paretoFronts);
             }
