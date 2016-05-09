@@ -95,45 +95,73 @@ public class EALoop {
         }
     }
 
-    private static MOTSP crossOver(MOTSP p1, MOTSP p2){
+    private static ArrayList<MOTSP> crossOver(MOTSP p1, MOTSP p2){
         /*
         Crossover makes a new empty genome, filled with "-1"s
         Then it chooses a sequence of DNA from p1 and adds it to the new genome
         Then it fills the rest of the empty DNA with chromosomes from p2 in sequential order, as long as the chromosome is not already present.
          */
-        int[] p1_gen = p1.getGenome(), p2_gen = p2.getGenome(), genome = new int[48];
-        Arrays.fill(genome, -1);         //Fills the genome with chromosomes of "-1"
+        int[] p1_gen = p1.getGenome(), p2_gen = p2.getGenome(), genome1 = new int[48], genome2 = new int[48];
+        Arrays.fill(genome1, -1);         //Fills the genome with chromosomes of "-1"
+        Arrays.fill(genome2, -1);
         Random rand = new Random();
         int cut1 = rand.nextInt(48);             //Start of dna sequence from parent 1
         int cut2 = rand.nextInt(48-cut1)+cut1;   //End of dna sequence from parent 1
         for (int i = cut1; i<cut2; i++){         //Sets the sequence from parent 1 to child
-            genome[i] = p1_gen[i];
+            genome1[i] = p1_gen[i];
+        }
+        for (int i = cut1; i<cut2; i++){
+            genome2[i] = p2_gen[i];
         }
         for (int i = 0; i <48; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
-            if (genome[i]==-1){      //Indicates chromosome not set
+            if (genome1[i]==-1){      //Indicates chromosome not set
                 for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p2_val = p2_gen[k];
                     boolean found = false;
                     for (int o=0; o<48; o++){   //This could be sped up with a .contains method..
-                        if (genome[o]==p2_val){
+                        if (genome1[o]==p2_val){
                             found = true;
                             break;
                         }
                     }
                     if (!found){
-                        genome[i] = p2_val;
+                        genome1[i] = p2_val;
                         break;
                     }
                 }
             }
         }
-        return new MOTSP(genome);
+        for (int i = 0; i <48; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
+            if (genome2[i]==-1){      //Indicates chromosome not set
+                for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
+                    int p1_val = p1_gen[k];
+                    boolean found = false;
+                    for (int o=0; o<48; o++){   //This could be sped up with a .contains method..
+                        if (genome2[o]==p1_val){
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found){
+                        genome2[i] = p1_val;
+                        break;
+                    }
+                }
+            }
+        }
+        ArrayList<MOTSP> temp = new ArrayList<MOTSP>();
+        temp.add(new MOTSP(genome1));
+        temp.add(new MOTSP(genome2));
+        return temp;
     }
 
     private static ArrayList<MOTSP> makeChildren(ArrayList<MOTSP> parents){
         ArrayList<MOTSP> children = new ArrayList<MOTSP>();
-        for (int n=0; n<parents.size(); n+=2){
-            children.add(crossOver(parents.get(n), parents.get(n+1)));
+        ArrayList<MOTSP> temp = new ArrayList<MOTSP>();
+        for (int n=0; n<parents.size()/2; n+=2){
+            temp = crossOver(parents.get(n), parents.get(n+1));
+            children.add(temp.get(0));
+            children.add(temp.get(1));
         }
         return children;
     }
