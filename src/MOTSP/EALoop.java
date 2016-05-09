@@ -44,7 +44,7 @@ public class EALoop {
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
 
             //Render visualization
-            if (curGen % 20 == 0) {
+            if (curGen % 10 == 0) {
                 plotAll(paretoFronts);
             }
 
