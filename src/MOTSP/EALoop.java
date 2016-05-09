@@ -1,11 +1,9 @@
 package MOTSP;
 
-import javafx.scene.layout.Pane;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
@@ -23,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class EALoop {
-    private static int nGenerations = 100000, curGen = 1, popSize = 2000;
+    private static int nGenerations = 50000000, curGen = 1, popSize = 2000;
     public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
@@ -68,8 +66,7 @@ public class EALoop {
         ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
         printFronts(paretoFronts);//print Pareto fronts
         Pareto.shutDown();
-
-
+        service.shutdown();
     }
 
 
@@ -247,6 +244,29 @@ public class EALoop {
         return result;
     }
 
+    private static XYDataset createDatasetWorst() {
+        MOTSP worstX = new MOTSP();
+        int worstXI = 0;
+        MOTSP worstY = new MOTSP();
+        int worstYI = 0;
+        for (MOTSP m : population){
+            if (m.getDistance()>worstXI){
+                worstX = m;
+                worstXI = (int) m.getDistance();
+            }
+            if (m.getCost()>worstYI){
+                worstY = m;
+                worstYI = (int) m.getCost();
+            }
+        }
+        XYSeriesCollection result = new XYSeriesCollection();
+        XYSeries series2 = new XYSeries("Worst");
+        series2.add(worstX.getDistance(), worstX.getCost());
+        series2.add(worstY.getDistance(), worstY.getCost());
+        result.addSeries(series2);
+        return result;
+    }
+
     private static XYDataset createDatasetAll() {
         XYSeriesCollection result = new XYSeriesCollection();
         XYSeries series = new XYSeries("Dominated");
@@ -262,6 +282,7 @@ public class EALoop {
     private static void plotAll(ArrayList<ArrayList<MOTSP>> paretoFronts) {
         XYDataset best = createDatasetBest(paretoFronts);
         XYDataset all = createDatasetAll();
+        XYDataset worst = createDatasetWorst();
 
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "Generation: "+curGen+", Mutation rate: "+mutationRate+", PopSize: "+popSize, // chart title
@@ -274,17 +295,26 @@ public class EALoop {
                 false // urls
         );
         XYPlot xyPlot = (XYPlot) chart.getPlot();
-        xyPlot.setDataset(0, best);
+        xyPlot.setDataset(0, worst);
+        xyPlot.setDataset(2, best);
         xyPlot.setDataset(1, all);
+
         XYLineAndShapeRenderer renderer0 = new XYLineAndShapeRenderer();
         XYDotRenderer renderer1 = new XYDotRenderer();
-        xyPlot.setRenderer(0, renderer0);
+        XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();
+        xyPlot.setRenderer(0, renderer2);
         xyPlot.setRenderer(1, renderer1);
-        xyPlot.getRendererForDataset(xyPlot.getDataset(0)).setSeriesPaint(0, Color.red);
+        xyPlot.setRenderer(2, renderer0);
+        xyPlot.getRendererForDataset(xyPlot.getDataset(2)).setSeriesPaint(0, Color.red);
         xyPlot.getRendererForDataset(xyPlot.getDataset(1)).setSeriesPaint(0, Color.blue);
+        xyPlot.getRendererForDataset(xyPlot.getDataset(0)).setSeriesPaint(0, Color.black);
+        renderer2.setSeriesLinesVisible(2,false);
+        renderer2.setSeriesLinesVisible(1,false);
+        renderer2.setSeriesLinesVisible(0,false);
+
 
         NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
-        domain.setRange(25000, 150000);
+        domain.setRange(25000, 180000);
         domain.setVerticalTickLabels(true);
         NumberAxis range = (NumberAxis) xyPlot.getRangeAxis();
         range.setRange(200, 2000);
