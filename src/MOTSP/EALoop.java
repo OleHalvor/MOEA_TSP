@@ -13,6 +13,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class EALoop {
-    private static int nGenerations = 50000000, curGen = 1, popSize = 2000;
+    private static int nGenerations = 1500, curGen = 1, popSize = 500;
     public static final double mutationRate = 0.1;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
@@ -44,7 +45,7 @@ public class EALoop {
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
 
             //Render visualization
-            if (curGen % 30 == 0) {
+            if (curGen % 1500 == 0) {
                 plotAll(paretoFronts);
                 plotNonDominated(paretoFronts);
             }
@@ -68,6 +69,7 @@ public class EALoop {
         printFronts(paretoFronts);//print Pareto fronts
         Pareto.shutDown();
         service.shutdown();
+        writeFrontToFile(paretoFronts.get(0));
     }
 
     private static ArrayList<MOTSP> removeDupes(ArrayList<MOTSP> children,ArrayList<MOTSP> population){
@@ -381,6 +383,16 @@ public class EALoop {
         ChartFrame frame = new ChartFrame("MOTSP", chart);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private static void writeFrontToFile(ArrayList<MOTSP> front){
+        try {
+            PrintWriter writer = new PrintWriter("pop"+popSize+"gen"+nGenerations+"mut"+mutationRate+".txt", "UTF-8");
+            for (MOTSP m: front){
+                writer.println(m.getDistance()+","+m.getCost());
+            }
+            writer.close();
+        }catch (Exception e){e.printStackTrace();}
     }
 
 }
