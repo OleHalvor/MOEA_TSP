@@ -32,7 +32,7 @@ public class PlotFrontsFromFiles {
         ArrayList<ArrayList<Double>> front2 = new ArrayList<ArrayList<Double>>();
         BufferedReader br;
         try {
-            br = new BufferedReader(new FileReader("pop100gen1000mut0.1.txt"));
+            br = new BufferedReader(new FileReader("pop500gen1500mut0.1.txt"));
             //StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
@@ -47,7 +47,7 @@ public class PlotFrontsFromFiles {
             }
         } catch (Exception e){e.printStackTrace();}
         try {
-            br = new BufferedReader(new FileReader("pop1000gen100mut0.1.txt"));
+            br = new BufferedReader(new FileReader("pop5000gen500mut0.1.txt"));
             //StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
@@ -62,7 +62,7 @@ public class PlotFrontsFromFiles {
             }
         } catch (Exception e){e.printStackTrace();}
         try {
-            br = new BufferedReader(new FileReader("pop2000gen100mut0.1.txt"));
+            br = new BufferedReader(new FileReader("pop5000gen500mut0.05.txt"));
             //StringBuilder sb = new StringBuilder();
             String line = br.readLine();
             while (line != null) {
@@ -80,9 +80,9 @@ public class PlotFrontsFromFiles {
     }
 
     private static void plotAll(ArrayList<ArrayList<Double>> front0,ArrayList<ArrayList<Double>> front1,ArrayList<ArrayList<Double>> front2) {
-        XYDataset front0X = createDatasetAll(front0,"0");
-        XYDataset front1X = createDatasetAll(front1,"1");
-        XYDataset front2X = createDatasetAll(front2,"2");
+        XYDataset front0X = createDatasetAll(front0,"pop500gen1500mut0.1");
+        XYDataset front1X = createDatasetAll(front1,"pop5000gen500mut0.1");
+        XYDataset front2X = createDatasetAll(front2,"pop5000gen500mut0.05");
 
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "all pareto fronts", // chart title

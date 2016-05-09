@@ -22,8 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class EALoop {
-    private static int nGenerations = 1500, curGen = 1, popSize = 500;
-    public static final double mutationRate = 0.1;
+    private static int nGenerations = 500000, curGen = 1, popSize = 1500;
+    public static final double mutationRate = 0.05;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
 
@@ -45,9 +45,9 @@ public class EALoop {
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
 
             //Render visualization
-            if (curGen % 1500 == 0) {
+            if (curGen % 100 == 0) {
                 plotAll(paretoFronts);
-                plotNonDominated(paretoFronts);
+                //plotNonDominated(paretoFronts);
             }
 
             // Select Parents
@@ -70,6 +70,7 @@ public class EALoop {
         Pareto.shutDown();
         service.shutdown();
         writeFrontToFile(paretoFronts.get(0));
+        printBestWorst(population);
     }
 
     private static ArrayList<MOTSP> removeDupes(ArrayList<MOTSP> children,ArrayList<MOTSP> population){
@@ -106,7 +107,13 @@ public class EALoop {
         Arrays.fill(genome2, -1);
         Random rand = new Random();
         int cut1 = rand.nextInt(48);             //Start of dna sequence from parent 1
-        int cut2 = rand.nextInt(48-cut1)+cut1;   //End of dna sequence from parent 1
+        int cut2 = rand.nextInt(48);        //End of dna sequence from parent 1
+        if (cut1>cut2){
+            int temp = cut1;
+            cut1 = cut2;
+            cut2 = temp;
+
+        }
         for (int i = cut1; i<cut2; i++){         //Sets the sequence from parent 1 to child
             genome1[i] = p1_gen[i];
         }
@@ -393,6 +400,39 @@ public class EALoop {
             }
             writer.close();
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    private static void printBestWorst(ArrayList<MOTSP> population ){
+        MOTSP worstX = new MOTSP();
+        int worstXI = 0;
+        MOTSP worstY = new MOTSP();
+        int worstYI = 0;
+        MOTSP bestX = new MOTSP();
+        int bestXI = 5000000;
+        MOTSP bestY = new MOTSP();
+        int bestYI = 5000000;
+        for (MOTSP m : population){
+            if (m.getDistance()>worstXI){
+                worstX = m;
+                worstXI = (int) m.getDistance();
+            }
+            if (m.getCost()>worstYI){
+                worstY = m;
+                worstYI = (int) m.getCost();
+            }
+            if (m.getDistance()<bestXI){
+                bestX = m;
+                bestXI = (int) m.getDistance();
+            }
+            if (m.getCost()<bestYI){
+                bestY = m;
+                bestYI = (int) m.getCost();
+            }
+        }
+        System.out.println("Best distance: "+bestXI);
+        System.out.println("Best cost: "+bestYI);
+        System.out.println("Worst distance: "+worstXI);
+        System.out.println("Worst cost: "+worstYI);
     }
 
 }
