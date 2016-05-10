@@ -59,7 +59,7 @@ public class Fitness {
         return distAndCost;
     }
 
-    private static ArrayList readFiles(String filename) throws Exception{
+    private static ArrayList<ArrayList<Integer>> readFiles(String filename) throws Exception{
         System.out.println("Loading "+filename);
         ArrayList<ArrayList<Integer>> outer = new ArrayList<ArrayList<Integer>>();
         int i = 0;
