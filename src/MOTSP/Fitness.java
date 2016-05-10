@@ -76,14 +76,12 @@ public class Fitness {
             k = 0;
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                if (k != 0) { //This is done to exclude the leftmost column
+                if (k != 0) //This is done to exclude the leftmost column
                     inner.add(((int) cell.getNumericCellValue()));
-                }
                 k++;
             }
-            if ( i != 0) {//This is done to exclude the upper row
+            if ( i != 0)//This is done to exclude the upper row
                 outer.add(inner);
-            }
             i++;
         }
         return outer;
