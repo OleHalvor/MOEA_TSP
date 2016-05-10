@@ -106,13 +106,13 @@ public class EALoop {
         Crossover makes a new empty genome, filled with "-1"s
         Then it chooses a sequence of DNA from p1 and adds it to the new genome
         Then it fills the rest of the empty DNA with chromosomes from p2 in sequential order, as long as the chromosome is not already present.
+            -this now generates 2 "opposite" children
          */
         int[] p1_gen = p1.getGenome(), p2_gen = p2.getGenome(), genome1 = new int[probLength], genome2 = new int[probLength];
         Arrays.fill(genome1, -1);         //Fills the genome with chromosomes of "-1"
         Arrays.fill(genome2, -1);
         Random rand = new Random();
-        int cut1 = rand.nextInt(probLength);             //Start of dna sequence from parent 1
-        int cut2 = rand.nextInt(probLength);        //End of dna sequence from parent 1
+        int cut1 = rand.nextInt(probLength), cut2 = rand.nextInt(probLength); //Generate the cut for DNA passdown
         if (cut1>cut2){
             int temp = cut1;
             cut1 = cut2;
