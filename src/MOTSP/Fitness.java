@@ -14,18 +14,25 @@ import java.util.Iterator;
 public class Fitness {
     private static ArrayList<ArrayList<Integer>> distances = new ArrayList<ArrayList<Integer>>();
     private static ArrayList<ArrayList<Integer>> costs = new ArrayList<ArrayList<Integer>>();
+    private static int probSize;
 
     public Fitness(){
         try {
-            this.distances = readFiles("Distance.xlsx");
-            this.costs = readFiles("Cost.xlsx");
+            distances = readFiles("Distance.xlsx");
+            costs = readFiles("Cost.xlsx");
         }catch (Exception e){e.printStackTrace();}
+        probSize = distances.size();
+    }
+
+    public int getProblemLength(){
+        System.out.println(distances.size());
+        return distances.size();
     }
 
     public static int[] getDistanceAndCost(MOTSP individual){
         int[] path = individual.getGenome();
         int totalCost = 0, totalDist = 0;
-        for (int i=0; i<47; i++){   //Loops over path and calculates distance and cost of each pair of cities
+        for (int i=0; i<probSize-1; i++){   //Loops over path and calculates distance and cost of each pair of cities
             int city1 = path[i], city2 = path[i+1];
             if (city2 < city1){
                 int tempCity = city1;
@@ -36,7 +43,7 @@ public class Fitness {
             totalCost += costs.get(city2).get(city1);
         }
         //the following lines calculates distance from last town back to first
-        int city1 = path[0], city2 = path[47];
+        int city1 = path[0], city2 = path[probSize-1];
         if (city2 < city1){
             int tempCity = city1;
             city1 = city2;

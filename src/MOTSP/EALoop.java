@@ -14,19 +14,21 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
 import java.io.PrintWriter;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class EALoop {
-    private static int nGenerations = 1550, curGen = 1, popSize = 500;
+    private static int nGenerations = 3000000, curGen = 1, popSize = 1000;
     public static final double mutationRate = 0.05;
     public static final int printGraph = 50;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
+    public static int probLength;
 
     //MultiProcessing Variables
     static ExecutorService service = Executors.newFixedThreadPool(4);
@@ -36,6 +38,7 @@ public class EALoop {
     static Future<ArrayList<MOTSP>> task3;
 
     public static void main (String[] args){
+        probLength = fitness.getProblemLength();
         System.out.println("Starting EALoop");
         initPopulation();
 
@@ -104,12 +107,12 @@ public class EALoop {
         Then it chooses a sequence of DNA from p1 and adds it to the new genome
         Then it fills the rest of the empty DNA with chromosomes from p2 in sequential order, as long as the chromosome is not already present.
          */
-        int[] p1_gen = p1.getGenome(), p2_gen = p2.getGenome(), genome1 = new int[48], genome2 = new int[48];
+        int[] p1_gen = p1.getGenome(), p2_gen = p2.getGenome(), genome1 = new int[probLength], genome2 = new int[probLength];
         Arrays.fill(genome1, -1);         //Fills the genome with chromosomes of "-1"
         Arrays.fill(genome2, -1);
         Random rand = new Random();
-        int cut1 = rand.nextInt(48);             //Start of dna sequence from parent 1
-        int cut2 = rand.nextInt(48);        //End of dna sequence from parent 1
+        int cut1 = rand.nextInt(probLength);             //Start of dna sequence from parent 1
+        int cut2 = rand.nextInt(probLength);        //End of dna sequence from parent 1
         if (cut1>cut2){
             int temp = cut1;
             cut1 = cut2;
@@ -122,12 +125,12 @@ public class EALoop {
         for (int i = cut1; i<cut2; i++){
             genome2[i] = p2_gen[i];
         }
-        for (int i = 0; i <48; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
+        for (int i = 0; i <probLength; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
             if (genome1[i]==-1){      //Indicates chromosome not set
-                for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
+                for (int k= 0; k<probLength; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p2_val = p2_gen[k];
                     boolean found = false;
-                    for (int o=0; o<48; o++){   //This could be sped up with a .contains method..
+                    for (int o=0; o<probLength; o++){   //This could be sped up with a .contains method..
                         if (genome1[o]==p2_val){
                             found = true;
                             break;
@@ -140,12 +143,12 @@ public class EALoop {
                 }
             }
         }
-        for (int i = 0; i <48; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
+        for (int i = 0; i <probLength; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
             if (genome2[i]==-1){      //Indicates chromosome not set
-                for (int k= 0; k<48; k++){ //Loop over p2 genome to find 1st value not in new genome
+                for (int k= 0; k<probLength; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p1_val = p1_gen[k];
                     boolean found = false;
-                    for (int o=0; o<48; o++){   //This could be sped up with a .contains method..
+                    for (int o=0; o<probLength; o++){   //This could be sped up with a .contains method..
                         if (genome2[o]==p1_val){
                             found = true;
                             break;

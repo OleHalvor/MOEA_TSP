@@ -1,6 +1,6 @@
 package MOTSP;
 
-import java.util.*;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MOTSP {
@@ -26,8 +26,8 @@ public class MOTSP {
     }
 
     private void generate_random_genome(){  //Generate all integers up to 48 and shuffle them.
-        int[] new_gene = new int[48];
-        for (int i =0; i<48; i++)
+        int[] new_gene = new int[EALoop.probLength];
+        for (int i =0; i<EALoop.probLength; i++)
             new_gene[i] = i;
         this.genome = shuffleArray(new_gene);
     }
@@ -35,7 +35,7 @@ public class MOTSP {
     public void tryToMutate(){
         Random rand = new Random();
         if (rand.nextDouble() < EALoop.mutationRate) {
-            int gen1 = rand.nextInt(48), gen2 = rand.nextInt(48 - gen1) + gen1;
+            int gen1 = rand.nextInt(EALoop.probLength), gen2 = rand.nextInt(EALoop.probLength - gen1) + gen1;
             int tempGen = genome[gen1];
             genome[gen1] = genome[gen2];
             genome[gen2] = tempGen;
