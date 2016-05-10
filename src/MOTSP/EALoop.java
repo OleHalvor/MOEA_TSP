@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 public class EALoop {
     private static int nGenerations = 3000000, curGen = 1, popSize = 1000;
 
-    public static final double mutationRate = 0.05;
+    public static double mutationRate = 0.05;
     public static final int printGraph = 50;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
     private static Fitness fitness = new Fitness(); //this is needed to make Fitness.java load the distance and cost files
@@ -44,7 +44,6 @@ public class EALoop {
         initPopulation();
 
         while (curGen <= nGenerations){
-
 
             //Calculate Pareto Fronts
             ArrayList<ArrayList<MOTSP>> paretoFronts = Pareto.generateParetoFronts(population);
@@ -65,7 +64,7 @@ public class EALoop {
             //Remove duplicate children
             children = removeDupes(children,population);
 
-            //Select adults from parents and children
+            //Select adults from population and children
             population = adultSelection(population, children);
 
             //increment generation counter
@@ -118,47 +117,40 @@ public class EALoop {
             int temp = cut1;
             cut1 = cut2;
             cut2 = temp;
-
         }
-        System.arraycopy(p2_gen,cut1,genome2,cut1,(cut2-cut1));  //Sets the sequence from parent 1 to child
+        System.arraycopy(p2_gen,cut1,genome2,cut1,(cut2-cut1));  //Copies the sequence between cuts down to new children
         System.arraycopy(p1_gen,cut1,genome1,cut1,(cut2-cut1));
 
-        for (int i = 0; i <probLength; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
-            if (genome1[i]==-1){      //Indicates chromosome not set
+        for (int i = 0; i <probLength; i++) //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
+            if (genome1[i]==-1)      //Indicates chromosome not set
                 for (int k= 0; k<probLength; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p2_val = p2_gen[k];
                     boolean found = false;
-                    for (int o=0; o<probLength; o++){   //This could be sped up with a .contains method..
+                    for (int o=0; o<probLength; o++)   //This could be sped up with a .contains method..
                         if (genome1[o]==p2_val){
                             found = true;
                             break;
                         }
-                    }
                     if (!found){
                         genome1[i] = p2_val;
                         break;
                     }
                 }
-            }
-        }
-        for (int i = 0; i <probLength; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
-            if (genome2[i]==-1){      //Indicates chromosome not set
+        for (int i = 0; i <probLength; i++) //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
+            if (genome2[i]==-1)      //Indicates chromosome not set
                 for (int k= 0; k<probLength; k++){ //Loop over p2 genome to find 1st value not in new genome
                     int p1_val = p1_gen[k];
                     boolean found = false;
-                    for (int o=0; o<probLength; o++){   //This could be sped up with a .contains method..
+                    for (int o=0; o<probLength; o++)   //This could be sped up with a .contains method..
                         if (genome2[o]==p1_val){
                             found = true;
                             break;
                         }
-                    }
                     if (!found){
                         genome2[i] = p1_val;
                         break;
                     }
                 }
-            }
-        }
         ArrayList<MOTSP> temp = new ArrayList<MOTSP>();
         temp.add(new MOTSP(genome1));
         temp.add(new MOTSP(genome2));
@@ -179,23 +171,20 @@ public class EALoop {
     private static ArrayList<MOTSP> ParentSelection(ArrayList<MOTSP> mostps, ArrayList<ArrayList<MOTSP>> paretoList){
         Random rng = new Random();
         ArrayList<MOTSP> parents = new ArrayList<MOTSP>();
-        //
         for (int n=0; n<popSize*2; n++) {
             MOTSP parentOne = mostps.get(rng.nextInt(mostps.size()));
             MOTSP parentTwo = mostps.get(rng.nextInt(mostps.size()));
-            //
-            if (parentOne.getParetoRank() < parentTwo.getParetoRank()) {
+            if (parentOne.getParetoRank() < parentTwo.getParetoRank())
                 parents.add(parentOne);
-            } else if (parentTwo.getParetoRank() < parentOne.getParetoRank()) {
+            else if (parentTwo.getParetoRank() < parentOne.getParetoRank())
                 parents.add(parentTwo);
-            } else {
+            else {
                 double oneDist = crowdingDistance(parentOne, paretoList.get(parentOne.getParetoRank()));
                 double twoDist = crowdingDistance(parentTwo, paretoList.get(parentTwo.getParetoRank()));
-                if (oneDist < twoDist) {
+                if (oneDist < twoDist)
                     parents.add(parentOne);
-                } else {
+                else
                     parents.add(parentTwo);
-                }
             }
         }
         return parents;
@@ -204,9 +193,8 @@ public class EALoop {
     private static ArrayList<MOTSP> adultSelection(ArrayList<MOTSP> parents, ArrayList<MOTSP> children){
         parents.addAll(children);
         ArrayList<ArrayList<MOTSP>> pareto = Pareto.generateParetoFronts(parents);
-        for (MOTSP m : parents){
+        for (MOTSP m : parents)
             m.setCrowdingDistance(crowdingDistance(m, pareto.get(m.getParetoRank())));
-        }
         //
         ArrayList<MOTSP> newPopulation = new ArrayList<MOTSP>();
         int n=popSize;
@@ -220,8 +208,7 @@ public class EALoop {
                 ArrayList<MOTSP> sortedArray = pareto.get(index);
                 try{
                     Collections.sort(sortedArray, new CustomComparator());
-                }catch (Exception e){e.printStackTrace();
-                }
+                }catch (Exception e){e.printStackTrace();}
                 int index2 = 0;
                 while(n > 0){
                     newPopulation.add(sortedArray.get(index2));
@@ -262,11 +249,10 @@ public class EALoop {
     }
 
     private static void printFronts(ArrayList<ArrayList<MOTSP>> paretoFronts){
-        //for (int i =0; i<paretoFronts.size(); i++){
-            for ( int k=0; k<paretoFronts.get(0).size(); k++){
+        for (int i =0; i<paretoFronts.size(); i++){
+            for ( int k=0; k<paretoFronts.get(0).size(); k++)
                 System.out.println("Front "+0+" Solution #"+k+"(distance,cost): "+paretoFronts.get(0).get(k).getDistance()+", "+paretoFronts.get(0).get(k).getCost() );
-            }
-      //  }
+        }
     }
 
     private static XYDataset createDatasetBest(ArrayList<ArrayList<MOTSP>> paretoFront) {
@@ -364,7 +350,6 @@ public class EALoop {
     private static void plotNonDominated(ArrayList<ArrayList<MOTSP>> paretoFronts) {
         XYDataset best = createDatasetBest(paretoFronts);
         XYDataset worst = createDatasetWorst();
-
         JFreeChart chart = ChartFactory.createScatterPlot(
                 "Generation: "+curGen+", Mutation rate: "+mutationRate+", PopSize: "+popSize+", ParetoFront size: "+paretoFronts.get(0).size(), // chart title
                 "Distance", // x axis label
@@ -377,11 +362,8 @@ public class EALoop {
         );
         XYPlot xyPlot = (XYPlot) chart.getPlot();
         xyPlot.setDataset(0, best);
-
-
         XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer();
         xyPlot.setRenderer(0, renderer2);
-
         xyPlot.getRendererForDataset(xyPlot.getDataset(0)).setSeriesPaint(0, Color.red);
         renderer2.setSeriesLinesVisible(2,true);
         renderer2.setSeriesLinesVisible(0,true);
@@ -398,9 +380,8 @@ public class EALoop {
     private static void writeFrontToFile(ArrayList<MOTSP> front){
         try {
             PrintWriter writer = new PrintWriter("pop"+popSize+"gen"+nGenerations+"mut"+mutationRate+".txt", "UTF-8");
-            for (MOTSP m: front){
+            for (MOTSP m: front)
                 writer.println(m.getDistance()+","+m.getCost());
-            }
             writer.close();
         }catch (Exception e){e.printStackTrace();}
     }
@@ -411,18 +392,14 @@ public class EALoop {
         int bestXI = 5000000;
         int bestYI = 5000000;
         for (MOTSP m : population){
-            if (m.getDistance()>worstXI){
+            if (m.getDistance()>worstXI)
                 worstXI = (int) m.getDistance();
-            }
-            if (m.getCost()>worstYI){
+            if (m.getCost()>worstYI)
                 worstYI = (int) m.getCost();
-            }
-            if (m.getDistance()<bestXI){
+            if (m.getDistance()<bestXI)
                 bestXI = (int) m.getDistance();
-            }
-            if (m.getCost()<bestYI){
+            if (m.getCost()<bestYI)
                 bestYI = (int) m.getCost();
-            }
         }
         System.out.println("Best distance: "+bestXI);
         System.out.println("Best cost: "+bestYI);
