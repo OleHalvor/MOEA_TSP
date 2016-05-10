@@ -24,6 +24,7 @@ import java.util.concurrent.Future;
 
 public class EALoop {
     private static int nGenerations = 3000000, curGen = 1, popSize = 1000;
+
     public static final double mutationRate = 0.05;
     public static final int printGraph = 50;
     private static ArrayList<MOTSP> population = new ArrayList<MOTSP>();
@@ -119,12 +120,9 @@ public class EALoop {
             cut2 = temp;
 
         }
-        for (int i = cut1; i<cut2; i++){         //Sets the sequence from parent 1 to child
-            genome1[i] = p1_gen[i];
-        }
-        for (int i = cut1; i<cut2; i++){
-            genome2[i] = p2_gen[i];
-        }
+        System.arraycopy(p2_gen,cut1,genome2,cut1,(cut2-cut1));  //Sets the sequence from parent 1 to child
+        System.arraycopy(p1_gen,cut1,genome1,cut1,(cut2-cut1));
+
         for (int i = 0; i <probLength; i++){ //Loop through new genome to fill empty spots of dna with chromosomes from p2 which are not present of the section from p1
             if (genome1[i]==-1){      //Indicates chromosome not set
                 for (int k= 0; k<probLength; k++){ //Loop over p2 genome to find 1st value not in new genome
@@ -169,7 +167,7 @@ public class EALoop {
 
     private static ArrayList<MOTSP> makeChildren(ArrayList<MOTSP> parents){
         ArrayList<MOTSP> children = new ArrayList<MOTSP>();
-        ArrayList<MOTSP> temp = new ArrayList<MOTSP>();
+        ArrayList<MOTSP> temp;
         for (int n=0; n<parents.size()/2; n+=2){
             temp = crossOver(parents.get(n), parents.get(n+1));
             children.add(temp.get(0));
@@ -222,7 +220,7 @@ public class EALoop {
                 ArrayList<MOTSP> sortedArray = pareto.get(index);
                 try{
                     Collections.sort(sortedArray, new CustomComparator());
-                }catch (Exception e){
+                }catch (Exception e){e.printStackTrace();
                 }
                 int index2 = 0;
                 while(n > 0){
@@ -408,29 +406,21 @@ public class EALoop {
     }
 
     private static void printBestWorst(ArrayList<MOTSP> population ){
-        MOTSP worstX = new MOTSP();
         int worstXI = 0;
-        MOTSP worstY = new MOTSP();
         int worstYI = 0;
-        MOTSP bestX = new MOTSP();
         int bestXI = 5000000;
-        MOTSP bestY = new MOTSP();
         int bestYI = 5000000;
         for (MOTSP m : population){
             if (m.getDistance()>worstXI){
-                worstX = m;
                 worstXI = (int) m.getDistance();
             }
             if (m.getCost()>worstYI){
-                worstY = m;
                 worstYI = (int) m.getCost();
             }
             if (m.getDistance()<bestXI){
-                bestX = m;
                 bestXI = (int) m.getDistance();
             }
             if (m.getCost()<bestYI){
-                bestY = m;
                 bestYI = (int) m.getCost();
             }
         }
